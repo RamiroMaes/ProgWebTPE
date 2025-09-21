@@ -1,0 +1,44 @@
+Que guardar para cada cosa:
+    Jugador:
+        Nombre PK   Por contexto del problema
+        iD PK
+        Posicion    NOT NULL
+        Edad NOT NULL
+        Goles NOT NULL
+        Fecha_nacimiento NOT NULL
+        Altura NOT NULL
+        Nombre_pais FK
+    
+    Lesion:
+        Tipo_Lesion    PK
+        Descripcion NOT NULL
+
+    Tiene:
+        Nombre_jugador PK FK
+        Tipo_Lesion PK FK
+        iD_Jugador PK FK
+        fecha_inicio
+        fecha_fin
+
+    Club:
+        Nombre PK
+        Ciudad PK
+
+    Jugo:
+        Nombre_jugador PK FK
+        iD_Jugador  PK FK
+        Nombre_club PK FK
+        Ciudad_club PK FK
+        fecha_inicio
+        fecha_fin
+    
+    Pais:
+        Nombre PK
+
+
+
+A larga pensar:
+
+    Diversas listas de clubes
+    Si se carga toda la liga(todos lo clubes) la relacion de club-jugador es (1,N)(0,N) xq pueden haber clubes sin jugadores de river
+    

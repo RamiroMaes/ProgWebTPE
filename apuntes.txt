@@ -42,3 +42,20 @@ A larga pensar:
     Diversas listas de clubes
     Si se carga toda la liga(todos lo clubes) la relacion de club-jugador es (1,N)(0,N) xq pueden haber clubes sin jugadores de river
     
+
+Agregar a los CREATE TABLE los "create at"
+
+
+
+Punto 3 del 2 ver lo del placeholder
+Preguntar Update de Club
+
+
+
+Ver triggers despues
+
+
+sqlc en el main
+las cargas
+los triggers
+ver si se separan los tp

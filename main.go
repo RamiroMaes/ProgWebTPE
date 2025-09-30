@@ -1,49 +1,103 @@
 package main
 
 import (
+	"context"
+	"database/sql"
 	"fmt"
-	"net/http"
+	"log"
+	"time"
+
+	_ "github.com/lib/pq"
+
+	// OJO: Reemplaza "PROGWEBTPE" con el nombre de tu módulo (ver go.mod)
+	sqlc "ejemplo.com/mi-proyecto-go/db/sqlc"
 )
 
 func main() {
-	// 1. Define el contenido HTML para la ruta principal
-	htmlContent := `<!DOCTYPE html><html><head>
-	 <title>Plantilla River Plate</title></head><body>
-	 <h1>Plantilla River Plate</h1>
-	 <p>A continuación se muestra la plantilla del equipo de fútbol River Plate:</p></body>
-	 </html>`
-	// 2. Define el contenido HTML para /about
-	aboutContent := `<!DOCTYPE html><html><head>
-	 <title>Acerca de</title></head><body>
-	 <h1>Info del Servidor</h1>
-	 <p>Servidor HTTP ompleto</p></body></html>`
+	// OJO: Reemplaza estos valores con tus credenciales reales.
+	connStr := "user=postgres password=XYZ dbname=tpespecial sslmode=disable"
 
-	// 3. Registra un manejador (handler) para la ruta raíz "/"
-	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
-		if r.URL.Path != "/" {
-			w.WriteHeader(http.StatusNotFound)
-			fmt.Fprint(w, "404 - Página no encontrada")
-			return
-		}
-		// 4. Establece la cabecera Content-Type
-		w.Header().Set("Content-Type", "text/html; charset=utf-8")
-		// 5. Escribe el HTML en la respuesta
-		fmt.Fprint(w, htmlContent)
-	})
-
-	// 6. Registra un manejador para la ruta /about
-	http.HandleFunc("/about", func(w http.ResponseWriter, r *http.Request) {
-		w.Header().Set("Content-Type", "text/html; charset=utf-8")
-		fmt.Fprint(w, aboutContent)
-	})
-
-	// 8. Define el puerto y muestra un mensaje
-	port := ":8080"
-	fmt.Printf("Servidor escuchando en http://localhost%s\n", port)
-
-	// 9. Inicia el servidor HTTP
-	err := http.ListenAndServe(port, nil)
+	db, err := sql.Open("postgres", connStr)
 	if err != nil {
-		fmt.Printf("Error al iniciar el servidor: %s\n", err)
+		log.Fatalf("Error al conectar a la base de datos: %v", err)
 	}
+	defer db.Close()
+
+	if err := db.Ping(); err != nil {
+		log.Fatalf("Error al hacer ping a la base de datos: %v", err)
+	}
+	fmt.Println("¡Conexión exitosa a la base de datos!")
+
+	queries := sqlc.New(db)
+	ctx := context.Background()
+
+	// --- 1. PREPARACIÓN: Crear un País (debido a la clave foránea) ---
+	// El jugador que vamos a crear es de "Francia", así que esa fila debe existir primero.
+	fmt.Println("\n--- Creando País de prueba... ---")
+	_, err = queries.CreatePais(ctx, "Francia")
+	if err != nil {
+		// No usamos log.Fatalf para que no se detenga si el país ya existe
+		fmt.Printf("Advertencia al crear país (puede que ya existiera): %v\n", err)
+	} else {
+		fmt.Println("País 'Francia' creado o ya existente.")
+	}
+
+	// --- 2. CREAR un nuevo jugador ---
+	fmt.Println("\n--- Creando un jugador... ---")
+
+	// Usamos time.Date para crear la fecha de nacimiento
+	fechaNac := time.Date(1987, time.June, 24, 0, 0, 0, 0, time.UTC)
+
+	createJugadorParams := sqlc.CreateJugadorParams{
+		Nombre:          "Lionel",
+		IDJugador:       10, // Corresponde a iD_Jugador
+		Posicion:        "Delantero",
+		FechaNacimiento: fechaNac,
+		Altura:          "1.70", // sqlc usa string para el tipo DECIMAL para mantener la precisión
+		PaisNombre:      "Argentina",
+	}
+
+	createdJugador, err := queries.CreateJugador(ctx, createJugadorParams)
+	if err != nil {
+		log.Fatalf("Error al crear jugador: %v", err)
+	}
+	fmt.Printf("Jugador creado: %+v\n", createdJugador)
+
+	// --- 3. LISTAR todos los jugadores ---
+	fmt.Println("\n--- Listando todos los jugadores... ---")
+	jugadores, err := queries.ListJugadores(ctx)
+	if err != nil {
+		log.Fatalf("Error al listar jugadores: %v", err)
+	}
+	fmt.Printf("Jugadores encontrados (%d):\n", len(jugadores))
+	for _, jugador := range jugadores {
+		fmt.Printf(" - ID: %d, Nombre: %s, Posición: %s, Altura: %s\n",
+			jugador.IDJugador, jugador.Nombre, jugador.Posicion, jugador.Altura)
+	}
+
+	// --- 4. ACTUALIZAR la posición del jugador creado ---
+	fmt.Println("\n--- Actualizando el jugador... ---")
+	err = queries.UpdateJugador(ctx, sqlc.UpdateJugadorParams{
+		Nombre:          createdJugador.Nombre,
+		IDJugador:       createdJugador.IDJugador,
+		FechaNacimiento: createdJugador.FechaNacimiento,
+		Altura:          createdJugador.Altura,
+		PaisNombre:      createdJugador.PaisNombre,
+		Posicion:        "Mediapunta", // Nueva posición
+	})
+	if err != nil {
+		log.Fatalf("Error al actualizar jugador: %v", err)
+	}
+	fmt.Printf("Jugador actualizado")
+
+	// --- 5. BORRAR el jugador ---
+	fmt.Println("\n--- Borrando el jugador... ---")
+	err = queries.DeleteJugador(ctx, sqlc.DeleteJugadorParams{
+		Nombre:    createdJugador.Nombre,
+		IDJugador: createdJugador.IDJugador,
+	})
+	if err != nil {
+		log.Fatalf("Error al borrar jugador: %v", err)
+	}
+	fmt.Println("Jugador borrado exitosamente.")
 }

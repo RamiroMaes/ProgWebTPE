@@ -9,7 +9,6 @@ CREATE TABLE Jugador (
     Nombre varchar(40)  NOT NULL,
     iD_Jugador int  NOT NULL,
     Posicion varchar(40)  NOT NULL,
-    Edad int  NOT NULL,
     fecha_nacimiento date  NOT NULL,
     altura decimal(1,2)  NOT NULL,
     Pais_Nombre varchar(40)  NOT NULL,

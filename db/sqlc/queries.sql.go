@@ -12,12 +12,17 @@ import (
 
 const createClub = `-- name: CreateClub :one
 INSERT INTO Club (Nombre, Ciudad)
-VALUES ('Inter de Milan', 'Milan')
+VALUES ($1, $2)
 RETURNING Nombre, Ciudad
 `
 
-func (q *Queries) CreateClub(ctx context.Context) (Club, error) {
-	row := q.db.QueryRowContext(ctx, createClub)
+type CreateClubParams struct {
+	Nombre string `json:"nombre"`
+	Ciudad string `json:"ciudad"`
+}
+
+func (q *Queries) CreateClub(ctx context.Context, arg CreateClubParams) (Club, error) {
+	row := q.db.QueryRowContext(ctx, createClub, arg.Nombre, arg.Ciudad)
 	var i Club
 	err := row.Scan(&i.Nombre, &i.Ciudad)
 	return i, err
@@ -26,11 +31,11 @@ func (q *Queries) CreateClub(ctx context.Context) (Club, error) {
 const createJugador = `-- name: CreateJugador :one
 
 INSERT INTO Jugador (Nombre, iD_Jugador, Posicion,Fecha_Nacimiento, Altura, Pais_Nombre)
-VALUES ('Lionel Messi', 1, 'Delantero', '1987-06-24', 1.70, 'Argentina')
+VALUES ($1, $2, $3, $4, $5, $6)
 RETURNING Nombre, iD_Jugador, Posicion,Fecha_Nacimiento, Altura, Pais_Nombre
 `
 
-type CreateJugadorRow struct {
+type CreateJugadorParams struct {
 	Nombre          string    `json:"nombre"`
 	IDJugador       int32     `json:"id_jugador"`
 	Posicion        string    `json:"posicion"`
@@ -40,9 +45,16 @@ type CreateJugadorRow struct {
 }
 
 // Una consulta para crear un nuevo registro (Create...) usando el csv "plantelRiverPlate.csv"
-func (q *Queries) CreateJugador(ctx context.Context) (CreateJugadorRow, error) {
-	row := q.db.QueryRowContext(ctx, createJugador)
-	var i CreateJugadorRow
+func (q *Queries) CreateJugador(ctx context.Context, arg CreateJugadorParams) (Jugador, error) {
+	row := q.db.QueryRowContext(ctx, createJugador,
+		arg.Nombre,
+		arg.IDJugador,
+		arg.Posicion,
+		arg.FechaNacimiento,
+		arg.Altura,
+		arg.PaisNombre,
+	)
+	var i Jugador
 	err := row.Scan(
 		&i.Nombre,
 		&i.IDJugador,
@@ -56,12 +68,17 @@ func (q *Queries) CreateJugador(ctx context.Context) (CreateJugadorRow, error) {
 
 const createLesion = `-- name: CreateLesion :one
 INSERT INTO Lesion (Tipo_Lesion, Descripcion)
-VALUES ('Faringitis', 'Inflamacion de la faringe')
+VALUES ($1, $2)
 RETURNING Tipo_Lesion, Descripcion
 `
 
-func (q *Queries) CreateLesion(ctx context.Context) (Lesion, error) {
-	row := q.db.QueryRowContext(ctx, createLesion)
+type CreateLesionParams struct {
+	TipoLesion  string `json:"tipo_lesion"`
+	Descripcion string `json:"descripcion"`
+}
+
+func (q *Queries) CreateLesion(ctx context.Context, arg CreateLesionParams) (Lesion, error) {
+	row := q.db.QueryRowContext(ctx, createLesion, arg.TipoLesion, arg.Descripcion)
 	var i Lesion
 	err := row.Scan(&i.TipoLesion, &i.Descripcion)
 	return i, err
@@ -69,13 +86,12 @@ func (q *Queries) CreateLesion(ctx context.Context) (Lesion, error) {
 
 const createPais = `-- name: CreatePais :one
 INSERT INTO Pais(Nombre)
-VALUES ('Italia')
+VALUES ($1)
 RETURNING Nombre
 `
 
-func (q *Queries) CreatePais(ctx context.Context) (string, error) {
-	row := q.db.QueryRowContext(ctx, createPais)
-	var nombre string
+func (q *Queries) CreatePais(ctx context.Context, nombre string) (string, error) {
+	row := q.db.QueryRowContext(ctx, createPais, nombre)
 	err := row.Scan(&nombre)
 	return nombre, err
 }
@@ -97,12 +113,17 @@ func (q *Queries) DeleteClub(ctx context.Context, arg DeleteClubParams) error {
 
 const deleteJugador = `-- name: DeleteJugador :exec
 DELETE FROM Jugador
-WHERE iD_Jugador = $1
+WHERE iD_Jugador = $1 AND Nombre = $2
 `
 
+type DeleteJugadorParams struct {
+	IDJugador int32  `json:"id_jugador"`
+	Nombre    string `json:"nombre"`
+}
+
 // Una consulta para borrar un registro (Delete...).
-func (q *Queries) DeleteJugador(ctx context.Context, idJugador int32) error {
-	_, err := q.db.ExecContext(ctx, deleteJugador, idJugador)
+func (q *Queries) DeleteJugador(ctx context.Context, arg DeleteJugadorParams) error {
+	_, err := q.db.ExecContext(ctx, deleteJugador, arg.IDJugador, arg.Nombre)
 	return err
 }
 
@@ -135,7 +156,7 @@ func (q *Queries) GetClub(ctx context.Context, arg GetClubParams) (Club, error) 
 
 const getJugador = `-- name: GetJugador :one
 
-SELECT nombre, id_jugador, posicion, edad, fecha_nacimiento, altura, pais_nombre FROM Jugador
+SELECT nombre, id_jugador, posicion, fecha_nacimiento, altura, pais_nombre FROM Jugador
 WHERE iD_Jugador = $1
 `
 
@@ -147,7 +168,6 @@ func (q *Queries) GetJugador(ctx context.Context, idJugador int32) (Jugador, err
 		&i.Nombre,
 		&i.IDJugador,
 		&i.Posicion,
-		&i.Edad,
 		&i.FechaNacimiento,
 		&i.Altura,
 		&i.PaisNombre,
@@ -196,7 +216,7 @@ func (q *Queries) ListClubs(ctx context.Context) ([]Club, error) {
 
 const listJugadores = `-- name: ListJugadores :many
 
-SELECT nombre, id_jugador, posicion, edad, fecha_nacimiento, altura, pais_nombre FROM Jugador
+SELECT nombre, id_jugador, posicion, fecha_nacimiento, altura, pais_nombre FROM Jugador
 `
 
 // Una consulta para listar todos los registros (List...).
@@ -213,7 +233,6 @@ func (q *Queries) ListJugadores(ctx context.Context) ([]Jugador, error) {
 			&i.Nombre,
 			&i.IDJugador,
 			&i.Posicion,
-			&i.Edad,
 			&i.FechaNacimiento,
 			&i.Altura,
 			&i.PaisNombre,
@@ -285,28 +304,28 @@ func (q *Queries) UpdateClub(ctx context.Context, arg UpdateClubParams) error {
 const updateJugador = `-- name: UpdateJugador :exec
 
 UPDATE Jugador
-SET Nombre = $1, Posicion = $2, Fecha_Nacimiento = $3, Altura = $4, Pais_Nombre = $5
-WHERE iD_Jugador = $6
+SET Posicion = $1, Fecha_Nacimiento = $2, Altura = $3, Pais_Nombre = $4
+WHERE iD_Jugador = $5 AND Nombre = $6
 `
 
 type UpdateJugadorParams struct {
-	Nombre          string    `json:"nombre"`
 	Posicion        string    `json:"posicion"`
 	FechaNacimiento time.Time `json:"fecha_nacimiento"`
 	Altura          string    `json:"altura"`
 	PaisNombre      string    `json:"pais_nombre"`
 	IDJugador       int32     `json:"id_jugador"`
+	Nombre          string    `json:"nombre"`
 }
 
 // Una consulta para actualizar un registro (Update...).
 func (q *Queries) UpdateJugador(ctx context.Context, arg UpdateJugadorParams) error {
 	_, err := q.db.ExecContext(ctx, updateJugador,
-		arg.Nombre,
 		arg.Posicion,
 		arg.FechaNacimiento,
 		arg.Altura,
 		arg.PaisNombre,
 		arg.IDJugador,
+		arg.Nombre,
 	)
 	return err
 }

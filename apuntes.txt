@@ -1,42 +1,3 @@
-Que guardar para cada cosa:
-    Jugador:
-        Nombre PK   Por contexto del problema
-        iD PK
-        Posicion    NOT NULL
-        Edad NOT NULL
-        Goles NOT NULL
-        Fecha_nacimiento NOT NULL
-        Altura NOT NULL
-        Nombre_pais FK
-    
-    Lesion:
-        Tipo_Lesion    PK
-        Descripcion NOT NULL
-
-    Tiene:
-        Nombre_jugador PK FK
-        Tipo_Lesion PK FK
-        iD_Jugador PK FK
-        fecha_inicio
-        fecha_fin
-
-    Club:
-        Nombre PK
-        Ciudad PK
-
-    Jugo:
-        Nombre_jugador PK FK
-        iD_Jugador  PK FK
-        Nombre_club PK FK
-        Ciudad_club PK FK
-        fecha_inicio
-        fecha_fin
-    
-    Pais:
-        Nombre PK
-
-
-
 A larga pensar:
 
     Diversas listas de clubes
@@ -58,4 +19,3 @@ Ver triggers despues
 sqlc en el main
 las cargas
 los triggers
-ver si se separan los tp

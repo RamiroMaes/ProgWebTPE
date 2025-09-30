@@ -2,19 +2,19 @@
 
 -- name: CreateJugador :one
 INSERT INTO Jugador (Nombre, iD_Jugador, Posicion,Fecha_Nacimiento, Altura, Pais_Nombre)
-VALUES ('Lionel Messi', 1, 'Delantero', '1987-06-24', 1.70, 'Argentina')
+VALUES ($1, $2, $3, $4, $5, $6)
 RETURNING Nombre, iD_Jugador, Posicion,Fecha_Nacimiento, Altura, Pais_Nombre;
 -- name: CreatePais :one
 INSERT INTO Pais(Nombre)
-VALUES ('Italia')
+VALUES ($1)
 RETURNING Nombre;
 -- name: CreateClub :one
 INSERT INTO Club (Nombre, Ciudad)
-VALUES ('Inter de Milan', 'Milan')
+VALUES ($1, $2)
 RETURNING Nombre, Ciudad;
 -- name: CreateLesion :one
 INSERT INTO Lesion (Tipo_Lesion, Descripcion)
-VALUES ('Faringitis', 'Inflamacion de la faringe')
+VALUES ($1, $2)
 RETURNING Tipo_Lesion, Descripcion;
 
 --Una consulta para obtener un registro por su ID (Get...).
@@ -44,8 +44,8 @@ SELECT * FROM Lesion;
 
 -- name: UpdateJugador :exec
 UPDATE Jugador
-SET Nombre = $1, Posicion = $2, Fecha_Nacimiento = $3, Altura = $4, Pais_Nombre = $5
-WHERE iD_Jugador = $6;
+SET Posicion = $1, Fecha_Nacimiento = $2, Altura = $3, Pais_Nombre = $4
+WHERE iD_Jugador = $5 AND Nombre = $6;
 
 --Preguntar
 -- name: UpdateClub :exec
@@ -61,7 +61,7 @@ WHERE Tipo_Lesion = $2;
 --Una consulta para borrar un registro (Delete...).
 -- name: DeleteJugador :exec
 DELETE FROM Jugador
-WHERE iD_Jugador = $1;
+WHERE iD_Jugador = $1 AND Nombre = $2;
 -- name: DeleteClub :exec
 DELETE FROM Club
 WHERE Nombre = $1 AND Ciudad = $2;

@@ -16,6 +16,15 @@ RETURNING Nombre, Ciudad;
 INSERT INTO Lesion (Tipo_Lesion, Descripcion)
 VALUES ($1, $2)
 RETURNING Tipo_Lesion, Descripcion;
+-- name: CreateJugo :one
+INSERT INTO Jugo (fecha_inicio, fecha_fin, Jugador_Nombre, Jugador_iD_Jugador, Club_Nombre, Club_Ciudad)
+VALUES ($1, $2, $3, $4, $5, $6)
+RETURNING *;
+-- name: CreateTiene :one
+INSERT INTO Tiene (
+    fecha_inicio, fecha_fin, Jugador_Nombre, Jugador_iD_Jugador, Lesion_Tipo_Lesion)
+VALUES ($1, $2, $3, $4, $5)
+RETURNING *;
 
 --Una consulta para obtener un registro por su ID (Get...).
 
@@ -46,8 +55,6 @@ SELECT * FROM Lesion;
 UPDATE Jugador
 SET Posicion = $1, Fecha_Nacimiento = $2, Altura = $3, Pais_Nombre = $4
 WHERE iD_Jugador = $5 AND Nombre = $6;
-
---Preguntar
 -- name: UpdateClub :exec
 UPDATE Club
 SET Nombre = $1, Ciudad = $2

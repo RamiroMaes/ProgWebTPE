@@ -3,16 +3,15 @@ CREATE TABLE Club (
     Ciudad varchar(40)  NOT NULL,
     CONSTRAINT Club_pk PRIMARY KEY (Nombre,Ciudad)
 );
-
 -- Table: Jugador
 CREATE TABLE Jugador (
     Nombre varchar(40)  NOT NULL,
     iD_Jugador int  NOT NULL,
     Posicion varchar(40)  NOT NULL,
     fecha_nacimiento date  NOT NULL,
-    altura decimal(1,2)  NOT NULL,
+    altura decimal(3,2)  NOT NULL,
     Pais_Nombre varchar(40)  NOT NULL,
-    CONSTRAINT Jugador PRIMARY KEY (Nombre,iD_Jugador)
+    CONSTRAINT Jugador_pk PRIMARY KEY (Nombre,iD_Jugador)
 );
 
 -- Table: Jugo
@@ -30,13 +29,13 @@ CREATE TABLE Jugo (
 CREATE TABLE Lesion (
     Tipo_Lesion varchar(50)  NOT NULL,
     Descripcion varchar(100)  NOT NULL,
-    CONSTRAINT Lesion PRIMARY KEY (Tipo_Lesion)
+    CONSTRAINT Lesion_pk PRIMARY KEY (Tipo_Lesion)
 );
 
 -- Table: Pais
 CREATE TABLE Pais (
     Nombre varchar(40)  NOT NULL,
-    CONSTRAINT Nombre PRIMARY KEY (Nombre)
+    CONSTRAINT Pais_pk PRIMARY KEY (Nombre)
 );
 
 -- Table: Tiene
@@ -46,7 +45,7 @@ CREATE TABLE Tiene (
     Jugador_Nombre varchar(40)  NOT NULL,
     Jugador_iD_Jugador int  NOT NULL,
     Lesion_Tipo_Lesion varchar(50)  NOT NULL,
-    CONSTRAINT Tiene_Lesion PRIMARY KEY (Jugador_Nombre,Jugador_iD_Jugador,Lesion_Tipo_Lesion)
+    CONSTRAINT Tiene_pk PRIMARY KEY (Jugador_Nombre,Jugador_iD_Jugador,Lesion_Tipo_Lesion)
 );
 
 -- foreign keys

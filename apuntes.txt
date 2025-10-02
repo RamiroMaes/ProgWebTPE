@@ -23,3 +23,5 @@ los triggers
 comandos:
     docker start some-postgres
     docker exec -it -e PGPASSWORD=XYZ some-postgres psql -U postgres -d tpespecial
+    \q para salir de la base
+    Borrar todo: DROP TABLE Jugador, Club, Pais, Jugo, Lesion, Tiene CASCADE;

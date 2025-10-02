@@ -19,3 +19,7 @@ Ver triggers despues
 sqlc en el main
 las cargas
 los triggers
+
+comandos:
+    docker start some-postgres
+    docker exec -it -e PGPASSWORD=XYZ some-postgres psql -U postgres -d tpespecial

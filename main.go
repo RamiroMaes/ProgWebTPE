@@ -7,14 +7,12 @@ import (
 	"log"
 	"time"
 
-	_ "github.com/lib/pq"
-
-	// OJO: Reemplaza "ProgWebTPE" con el nombre de tu módulo (ver go.mod)
 	sqlc "ejemplo.com/mi-proyecto-go/db/sqlc"
+	_ "github.com/lib/pq"
 )
 
 func main() {
-	
+
 	connStr := "user=postgres password=XYZ dbname=tpespecial sslmode=disable"
 
 	db, err := sql.Open("postgres", connStr)
@@ -31,7 +29,6 @@ func main() {
 	queries := sqlc.New(db)
 	ctx := context.Background()
 
-	
 	// --- 1. PREPARACIÓN: Crear Países ---
 	fmt.Println("\n--- Creando Países de prueba... ---")
 	paises := []string{"Argentina", "Francia"}
@@ -105,18 +102,18 @@ func main() {
 			jugador.IDJugador, jugador.Nombre, jugador.Posicion)
 	}
 
-/*
-	// --- 6. BORRAR el jugador ---
-	fmt.Println("\n--- Borrando el jugador... ---")
-	err = queries.DeleteJugador(ctx, sqlc.DeleteJugadorParams{
-		IDJugador: createdJugador.IDJugador,
-		Nombre:    createdJugador.Nombre,
-	})
-	if err != nil {
-		log.Fatalf("Error al borrar jugador: %v", err)
-	}
-	fmt.Println("Jugador borrado exitosamente.")
-*/
+	/*
+		// --- 6. BORRAR el jugador ---
+		fmt.Println("\n--- Borrando el jugador... ---")
+		err = queries.DeleteJugador(ctx, sqlc.DeleteJugadorParams{
+			IDJugador: createdJugador.IDJugador,
+			Nombre:    createdJugador.Nombre,
+		})
+		if err != nil {
+			log.Fatalf("Error al borrar jugador: %v", err)
+		}
+		fmt.Println("Jugador borrado exitosamente.")
+	*/
 	// --- 7. Probar CRUD para Club ---
 	fmt.Println("\n--- Probando CRUD para Club... ---")
 	club, err := queries.CreateClub(ctx, sqlc.CreateClubParams{Nombre: "River Plate", Ciudad: "Buenos Aires"})
@@ -136,22 +133,14 @@ func main() {
 		fmt.Printf(" - Nombre: %s, Ciudad: %s\n", c.Nombre, c.Ciudad)
 	}
 
-/*
-	// Borrar club
-	err = queries.DeleteClub(ctx, sqlc.DeleteClubParams{Nombre: "River Plate", Ciudad: "Buenos Aires"})
-	if err != nil {
-		log.Fatalf("Error al borrar club: %v", err)
-	}
-	fmt.Println("Club 'River Plate' borrado.")
-*/
+	/*
+	   // Borrar club
+	   err = queries.DeleteClub(ctx, sqlc.DeleteClubParams{Nombre: "River Plate", Ciudad: "Buenos Aires"})
 
-	type Jugo struct {
-		FechaInicio      time.Time `json:"fecha_inicio"`
-		FechaFin         time.Time `json:"fecha_fin"`
-		JugadorNombre    string    `json:"jugador_nombre"`
-		JugadorIDJugador int32     `json:"jugador_id_jugador"`
-		ClubNombre       string    `json:"club_nombre"`
-		ClubCiudad       string    `json:"club_ciudad"`
-	}
+	   	if err != nil {
+	   		log.Fatalf("Error al borrar club: %v", err)
+	   	}
 
+	   fmt.Println("Club 'River Plate' borrado.")
+	*/
 }

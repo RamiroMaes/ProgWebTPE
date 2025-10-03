@@ -26,6 +26,7 @@ Pasos:
             -creamos las tablas que se encuentran en schema.sql
             
         f- go run .
+            -tener en cuenta que se debe modificar la linea 16 del main en caso de que se haya utilizado cierto dato diferente.
             -Asi, se corre el programa, esperando como respuesta:
             
                 Conexión exitosa a la base de datos

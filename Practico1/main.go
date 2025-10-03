@@ -6,7 +6,7 @@ import (
 )
 
 func main() {
-	//Regtistramos un handler para la ruta raíz "/"
+	//Registramos un handler para la ruta raíz "/"
 	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
 		if r.URL.Path != "/" {
 			w.WriteHeader(http.StatusNotFound)

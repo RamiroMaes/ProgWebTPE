@@ -30,7 +30,7 @@ func StartServer(connStr string, addr string) error {
 	mux.HandleFunc("GET /jugadores/{id}", h.GetJugadorHandler(dbConn))
 	mux.HandleFunc("PUT /jugadores/{id}", h.UpdateJugadorHandler(dbConn))
 	mux.HandleFunc("DELETE /jugadores/{id}/{nombre}", h.DeleteJugadorHandler(dbConn))
-	/*
+	
 	// --- CLUBS ---
 	mux.HandleFunc("GET /clubs", h.ListClubsHandler(dbConn))
 	mux.HandleFunc("POST /clubs", h.CreateClubHandler(dbConn))
@@ -47,8 +47,8 @@ func StartServer(connStr string, addr string) error {
 	mux.HandleFunc("GET /lesiones", h.ListLesionesHandler(dbConn))
 	mux.HandleFunc("POST /lesiones", h.CreateLesionHandler(dbConn))
 	mux.HandleFunc("DELETE /lesiones/{tipo_lesion}", h.DeleteLesionHandler(dbConn))
-	*/
-	//
+	
+	// --- RELACIONES ---
 	// mux.HandleFunc("GET /jugadores/{id}/clubs", h.ListJugosForJugadorHandler(dbConn))
 	// mux.HandleFunc("POST /jugadores/{id}/clubs", h.CreateJugoHandler(dbConn))
 	// mux.HandleFunc("GET /jugadores/{id}/lesiones", h.ListLesionesForJugadorHandler(dbConn))

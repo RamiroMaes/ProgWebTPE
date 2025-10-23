@@ -1,4 +1,4 @@
 HTTP server: conectado a la base de datos
-2025/10/23 09:32:01 Servidor escuchando en :8080
-2025/10/23 09:32:01 error en servidor: listen tcp :8080: bind: address already in use
+2025/10/23 10:54:41 Servidor escuchando en :8080
+2025/10/23 10:54:41 error en servidor: listen tcp :8080: bind: address already in use
 exit status 1

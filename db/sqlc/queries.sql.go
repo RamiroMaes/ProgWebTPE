@@ -40,7 +40,7 @@ type CreateJugadorParams struct {
 	IDJugador       int32     `json:"id_jugador"`
 	Posicion        string    `json:"posicion"`
 	FechaNacimiento time.Time `json:"fecha_nacimiento"`
-	Altura          string    `json:"altura"`
+	Altura          int32     `json:"altura"`
 	PaisNombre      string    `json:"pais_nombre"`
 }
 
@@ -399,12 +399,44 @@ func (q *Queries) ListClubs(ctx context.Context) ([]Club, error) {
 
 const listJugadores = `-- name: ListJugadores :many
 
+SELECT iD_Jugador, Nombre FROM Jugador
+`
+
+type ListJugadoresRow struct {
+	IDJugador int32  `json:"id_jugador"`
+	Nombre    string `json:"nombre"`
+}
+
+// Una consulta para listar todos los registros (List...).
+func (q *Queries) ListJugadores(ctx context.Context) ([]ListJugadoresRow, error) {
+	rows, err := q.db.QueryContext(ctx, listJugadores)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []ListJugadoresRow
+	for rows.Next() {
+		var i ListJugadoresRow
+		if err := rows.Scan(&i.IDJugador, &i.Nombre); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const listJugadoresCompleto = `-- name: ListJugadoresCompleto :many
 SELECT nombre, id_jugador, posicion, fecha_nacimiento, altura, pais_nombre FROM Jugador
 `
 
-// Una consulta para listar todos los registros (List...).
-func (q *Queries) ListJugadores(ctx context.Context) ([]Jugador, error) {
-	rows, err := q.db.QueryContext(ctx, listJugadores)
+func (q *Queries) ListJugadoresCompleto(ctx context.Context) ([]Jugador, error) {
+	rows, err := q.db.QueryContext(ctx, listJugadoresCompleto)
 	if err != nil {
 		return nil, err
 	}
@@ -587,7 +619,7 @@ WHERE iD_Jugador = $5 AND Nombre = $6
 type UpdateJugadorParams struct {
 	Posicion        string    `json:"posicion"`
 	FechaNacimiento time.Time `json:"fecha_nacimiento"`
-	Altura          string    `json:"altura"`
+	Altura          int32     `json:"altura"`
 	PaisNombre      string    `json:"pais_nombre"`
 	IDJugador       int32     `json:"id_jugador"`
 	Nombre          string    `json:"nombre"`

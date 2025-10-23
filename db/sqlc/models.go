@@ -18,7 +18,7 @@ type Jugador struct {
 	IDJugador       int32     `json:"id_jugador"`
 	Posicion        string    `json:"posicion"`
 	FechaNacimiento time.Time `json:"fecha_nacimiento"`
-	Altura          string    `json:"altura"`
+	Altura          int32     `json:"altura"`
 	PaisNombre      string    `json:"pais_nombre"`
 }
 

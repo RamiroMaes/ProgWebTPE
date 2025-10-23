@@ -16,7 +16,7 @@ CREATE TABLE Jugador (
     iD_Jugador int  NOT NULL,
     Posicion varchar(40)  NOT NULL,
     fecha_nacimiento date  NOT NULL,
-    altura decimal(3,2)  NOT NULL,
+    altura int  NOT NULL,
     Pais_Nombre varchar(40)  NOT NULL,
     CONSTRAINT Jugador_pk PRIMARY KEY (Nombre,iD_Jugador)
 );

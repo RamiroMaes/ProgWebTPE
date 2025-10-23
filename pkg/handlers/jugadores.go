@@ -8,6 +8,8 @@ import (
 	"net/http"
 	"strconv"
 	"strings"
+	"time"
+
 	db "ejemplo.com/mi-proyecto-go/db/sqlc"
 )
 
@@ -20,9 +22,25 @@ func CreateJugadorHandler(dbConn *sql.DB) http.HandlerFunc {
 			return
 		}
 		
-		// Validación. Se podrian ver todos los null ademas.
+		// Validación de que todos los campos obligatorios estén presentes
 		if strings.TrimSpace(p.Nombre) == "" {
 			http.Error(w, "nombre es obligatorio", http.StatusBadRequest)
+			return
+		}
+		if p.Altura <= 0 {
+			http.Error(w, "altura es obligatorio y debe ser > 0", http.StatusBadRequest)
+			return
+		}
+		if strings.TrimSpace(p.Posicion) == "" {
+			http.Error(w, "posición es obligatorio", http.StatusBadRequest)
+			return
+		}
+		if strings.TrimSpace(p.PaisNombre) == "" {
+			http.Error(w, "pais_nombre es obligatorio", http.StatusBadRequest)
+			return
+		}
+		if time.Time(p.FechaNacimiento).IsZero() {
+			http.Error(w, "fecha_nacimiento es obligatorio", http.StatusBadRequest)
 			return
 		}
 		if p.IDJugador <= 0 {

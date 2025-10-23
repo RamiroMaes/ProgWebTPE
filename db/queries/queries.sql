@@ -54,6 +54,8 @@ WHERE Jugador_iD_Jugador = $1 AND Jugador_Nombre = $2 AND Lesion_Tipo_Lesion = $
 --Una consulta para listar todos los registros (List...).
 
 -- name: ListJugadores :many
+SELECT iD_Jugador, Nombre FROM Jugador;
+-- name: ListJugadoresCompleto :many
 SELECT * FROM Jugador;
 -- name: ListClubs :many
 SELECT * FROM Club;

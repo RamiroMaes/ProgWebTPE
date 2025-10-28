@@ -21,7 +21,7 @@ func StartServer(connStr string, addr string) error {
 	}
 	fmt.Println("HTTP server: conectado a la base de datos")
 
-	// Usamos el mux estándar de Go 1.22+
+	// Usamos el mux estandar de net/http
 	mux := http.NewServeMux()
 
 	// --- JUGADORES ---
@@ -55,14 +55,6 @@ func StartServer(connStr string, addr string) error {
 	// mux.HandleFunc("GET /jugadores/{id}/lesiones", h.ListLesionesForJugadorHandler(dbConn))
 	// mux.HandleFunc("POST /jugadores/{id}/lesiones", h.CreateTieneHandler(dbConn))
 
-	// --- ARCHIVOS ESTÁTICOS ---
-    // Servir index.html en la raíz
-    mux.HandleFunc("GET /{$}", func(w http.ResponseWriter, r *http.Request) {
-        http.ServeFile(w, r, "./index.html")
-    })
-
-	fs := http.FileServer(http.Dir("."))
-	mux.Handle("GET /", fs)
 
 	// Inicia el servidor
 	log.Printf("Servidor escuchando en %s\n", addr)

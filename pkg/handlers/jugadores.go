@@ -76,11 +76,11 @@ func ListJugadoresHandler(dbConn *sql.DB) http.HandlerFunc {
 	}
 }
 
-// GET /jugadoresCompleto
-func ListJugadoresCompletoHandler(dbConn *sql.DB) http.HandlerFunc {
+// GET /plantel
+func ListPlantelHandler(dbConn *sql.DB) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		queries := db.New(dbConn)
-		all, err := queries.ListJugadoresCompleto(context.Background())
+		all, err := queries.ListPlantel(context.Background())
 		if err != nil {
 			http.Error(w, "db error: "+err.Error(), http.StatusInternalServerError)
 			return

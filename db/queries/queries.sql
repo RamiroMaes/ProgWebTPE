@@ -55,7 +55,7 @@ WHERE Jugador_iD_Jugador = $1 AND Lesion_Tipo_Lesion = $2;
 
 -- name: ListJugadores :many
 SELECT iD_Jugador, Nombre FROM Jugador;
--- name: ListJugadoresCompleto :many
+-- name: ListPlantel :many
 SELECT * FROM Jugador;
 -- name: ListClubs :many
 SELECT * FROM Club;

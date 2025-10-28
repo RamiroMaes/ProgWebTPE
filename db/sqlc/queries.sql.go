@@ -404,40 +404,6 @@ func (q *Queries) ListJugadores(ctx context.Context) ([]ListJugadoresRow, error)
 	return items, nil
 }
 
-const listJugadoresCompleto = `-- name: ListJugadoresCompleto :many
-SELECT nombre, id_jugador, posicion, fecha_nacimiento, altura, pais_nombre FROM Jugador
-`
-
-func (q *Queries) ListJugadoresCompleto(ctx context.Context) ([]Jugador, error) {
-	rows, err := q.db.QueryContext(ctx, listJugadoresCompleto)
-	if err != nil {
-		return nil, err
-	}
-	defer rows.Close()
-	var items []Jugador
-	for rows.Next() {
-		var i Jugador
-		if err := rows.Scan(
-			&i.Nombre,
-			&i.IDJugador,
-			&i.Posicion,
-			&i.FechaNacimiento,
-			&i.Altura,
-			&i.PaisNombre,
-		); err != nil {
-			return nil, err
-		}
-		items = append(items, i)
-	}
-	if err := rows.Close(); err != nil {
-		return nil, err
-	}
-	if err := rows.Err(); err != nil {
-		return nil, err
-	}
-	return items, nil
-}
-
 const listJugos = `-- name: ListJugos :many
 SELECT fecha_inicio, fecha_fin, jugador_id_jugador, club_nombre, club_ciudad FROM Jugo
 `
@@ -515,6 +481,40 @@ func (q *Queries) ListPaises(ctx context.Context) ([]string, error) {
 			return nil, err
 		}
 		items = append(items, nombre)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const listPlantel = `-- name: ListPlantel :many
+SELECT nombre, id_jugador, posicion, fecha_nacimiento, altura, pais_nombre FROM Jugador
+`
+
+func (q *Queries) ListPlantel(ctx context.Context) ([]Jugador, error) {
+	rows, err := q.db.QueryContext(ctx, listPlantel)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []Jugador
+	for rows.Next() {
+		var i Jugador
+		if err := rows.Scan(
+			&i.Nombre,
+			&i.IDJugador,
+			&i.Posicion,
+			&i.FechaNacimiento,
+			&i.Altura,
+			&i.PaisNombre,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
 	}
 	if err := rows.Close(); err != nil {
 		return nil, err

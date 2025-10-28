@@ -1,8 +1,8 @@
 const jugadores = document.getElementById("tabla-jugadores");
 
-async function cargarProductos() {
+async function cargarPlantel() {
     try {
-        const response = await fetch('/jugadoresCompleto');
+        const response = await fetch('/plantel');
 
         if (!response.ok) {
             throw new Error(`Error HTTP: ${response.status}`);
@@ -18,16 +18,21 @@ async function cargarProductos() {
 }
 
 function construirTabla(jugadores) {
-    const tbody = document.getElementById("tabla-jugadores");
+    const tabla = document.getElementById("tabla-jugadores");
+    const tbody = tabla.querySelector("tbody");
+    
     tbody.innerHTML = ""; // Se limpia la tabla por si acaso
 
-    // Itera sobre los productos y crea las filas
-    for (const producto of productos) {
+    // Itera sobre los jugadores y crea las filas
+    for (const jugador of jugadores) {
         const fila = `
             <tr>
-                <td>${producto.id}</td>
-                <td>${producto.name}</td>
-                <td>${producto.price}</td>
+                <td>${jugador.posicion}</td>
+                <td>${jugador.id_jugador}</td>
+                <td>${jugador.nombre}</td>
+                <td>${jugador.pais}</td>
+                <td>${jugador.fecha_nacimiento}</td>
+                <td>${jugador.altura}</td>
             </tr>
         `;
         tbody.innerHTML += fila; // Agrega la fila al cuerpo de la tabla
@@ -35,4 +40,4 @@ function construirTabla(jugadores) {
 }
 
 // Llama a la función cuando el DOM esté listo
-document.addEventListener('DOMContentLoaded', cargarProductos);
+document.addEventListener('DOMContentLoaded', cargarPlantel);

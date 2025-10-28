@@ -25,7 +25,6 @@ type Jugador struct {
 type Jugo struct {
 	FechaInicio      time.Time `json:"fecha_inicio"`
 	FechaFin         time.Time `json:"fecha_fin"`
-	JugadorNombre    string    `json:"jugador_nombre"`
 	JugadorIDJugador int32     `json:"jugador_id_jugador"`
 	ClubNombre       string    `json:"club_nombre"`
 	ClubCiudad       string    `json:"club_ciudad"`
@@ -43,7 +42,6 @@ type Pais struct {
 type Tiene struct {
 	FechaInicio      time.Time `json:"fecha_inicio"`
 	FechaFin         time.Time `json:"fecha_fin"`
-	JugadorNombre    string    `json:"jugador_nombre"`
 	JugadorIDJugador int32     `json:"jugador_id_jugador"`
 	LesionTipoLesion string    `json:"lesion_tipo_lesion"`
 }

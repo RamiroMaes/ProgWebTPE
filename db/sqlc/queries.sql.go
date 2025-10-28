@@ -67,15 +67,14 @@ func (q *Queries) CreateJugador(ctx context.Context, arg CreateJugadorParams) (J
 }
 
 const createJugo = `-- name: CreateJugo :one
-INSERT INTO Jugo (fecha_inicio, fecha_fin, Jugador_Nombre, Jugador_iD_Jugador, Club_Nombre, Club_Ciudad)
-VALUES ($1, $2, $3, $4, $5, $6)
-RETURNING fecha_inicio, fecha_fin, jugador_nombre, jugador_id_jugador, club_nombre, club_ciudad
+INSERT INTO Jugo (fecha_inicio, fecha_fin, Jugador_iD_Jugador, Club_Nombre, Club_Ciudad)
+VALUES ($1, $2, $3, $4, $5)
+RETURNING fecha_inicio, fecha_fin, jugador_id_jugador, club_nombre, club_ciudad
 `
 
 type CreateJugoParams struct {
 	FechaInicio      time.Time `json:"fecha_inicio"`
 	FechaFin         time.Time `json:"fecha_fin"`
-	JugadorNombre    string    `json:"jugador_nombre"`
 	JugadorIDJugador int32     `json:"jugador_id_jugador"`
 	ClubNombre       string    `json:"club_nombre"`
 	ClubCiudad       string    `json:"club_ciudad"`
@@ -85,7 +84,6 @@ func (q *Queries) CreateJugo(ctx context.Context, arg CreateJugoParams) (Jugo, e
 	row := q.db.QueryRowContext(ctx, createJugo,
 		arg.FechaInicio,
 		arg.FechaFin,
-		arg.JugadorNombre,
 		arg.JugadorIDJugador,
 		arg.ClubNombre,
 		arg.ClubCiudad,
@@ -94,7 +92,6 @@ func (q *Queries) CreateJugo(ctx context.Context, arg CreateJugoParams) (Jugo, e
 	err := row.Scan(
 		&i.FechaInicio,
 		&i.FechaFin,
-		&i.JugadorNombre,
 		&i.JugadorIDJugador,
 		&i.ClubNombre,
 		&i.ClubCiudad,
@@ -133,15 +130,14 @@ func (q *Queries) CreatePais(ctx context.Context, nombre string) (string, error)
 }
 
 const createTiene = `-- name: CreateTiene :one
-INSERT INTO Tiene (fecha_inicio, fecha_fin, Jugador_Nombre, Jugador_iD_Jugador, Lesion_Tipo_Lesion)
-VALUES ($1, $2, $3, $4, $5)
-RETURNING fecha_inicio, fecha_fin, jugador_nombre, jugador_id_jugador, lesion_tipo_lesion
+INSERT INTO Tiene (fecha_inicio, fecha_fin, Jugador_iD_Jugador, Lesion_Tipo_Lesion)
+VALUES ($1, $2, $3, $4)
+RETURNING fecha_inicio, fecha_fin, jugador_id_jugador, lesion_tipo_lesion
 `
 
 type CreateTieneParams struct {
 	FechaInicio      time.Time `json:"fecha_inicio"`
 	FechaFin         time.Time `json:"fecha_fin"`
-	JugadorNombre    string    `json:"jugador_nombre"`
 	JugadorIDJugador int32     `json:"jugador_id_jugador"`
 	LesionTipoLesion string    `json:"lesion_tipo_lesion"`
 }
@@ -150,7 +146,6 @@ func (q *Queries) CreateTiene(ctx context.Context, arg CreateTieneParams) (Tiene
 	row := q.db.QueryRowContext(ctx, createTiene,
 		arg.FechaInicio,
 		arg.FechaFin,
-		arg.JugadorNombre,
 		arg.JugadorIDJugador,
 		arg.LesionTipoLesion,
 	)
@@ -158,7 +153,6 @@ func (q *Queries) CreateTiene(ctx context.Context, arg CreateTieneParams) (Tiene
 	err := row.Scan(
 		&i.FechaInicio,
 		&i.FechaFin,
-		&i.JugadorNombre,
 		&i.JugadorIDJugador,
 		&i.LesionTipoLesion,
 	)
@@ -182,39 +176,28 @@ func (q *Queries) DeleteClub(ctx context.Context, arg DeleteClubParams) error {
 
 const deleteJugador = `-- name: DeleteJugador :exec
 DELETE FROM Jugador
-WHERE iD_Jugador = $1 AND Nombre = $2
+WHERE iD_Jugador = $1
 `
 
-type DeleteJugadorParams struct {
-	IDJugador int32  `json:"id_jugador"`
-	Nombre    string `json:"nombre"`
-}
-
 // Una consulta para borrar un registro (Delete...).
-func (q *Queries) DeleteJugador(ctx context.Context, arg DeleteJugadorParams) error {
-	_, err := q.db.ExecContext(ctx, deleteJugador, arg.IDJugador, arg.Nombre)
+func (q *Queries) DeleteJugador(ctx context.Context, idJugador int32) error {
+	_, err := q.db.ExecContext(ctx, deleteJugador, idJugador)
 	return err
 }
 
 const deleteJugo = `-- name: DeleteJugo :exec
 DELETE FROM Jugo
-WHERE Jugador_iD_Jugador = $1 AND Jugador_Nombre = $2 AND Club_Nombre = $3 AND Club_Ciudad = $4
+WHERE Jugador_iD_Jugador = $1 AND Club_Nombre = $2 AND Club_Ciudad = $3
 `
 
 type DeleteJugoParams struct {
 	JugadorIDJugador int32  `json:"jugador_id_jugador"`
-	JugadorNombre    string `json:"jugador_nombre"`
 	ClubNombre       string `json:"club_nombre"`
 	ClubCiudad       string `json:"club_ciudad"`
 }
 
 func (q *Queries) DeleteJugo(ctx context.Context, arg DeleteJugoParams) error {
-	_, err := q.db.ExecContext(ctx, deleteJugo,
-		arg.JugadorIDJugador,
-		arg.JugadorNombre,
-		arg.ClubNombre,
-		arg.ClubCiudad,
-	)
+	_, err := q.db.ExecContext(ctx, deleteJugo, arg.JugadorIDJugador, arg.ClubNombre, arg.ClubCiudad)
 	return err
 }
 
@@ -240,17 +223,16 @@ func (q *Queries) DeletePais(ctx context.Context, nombre string) error {
 
 const deleteTiene = `-- name: DeleteTiene :exec
 DELETE FROM Tiene
-WHERE Jugador_iD_Jugador = $1 AND Jugador_Nombre = $2 AND Lesion_Tipo_Lesion = $3
+WHERE Jugador_iD_Jugador = $1 AND Lesion_Tipo_Lesion = $2
 `
 
 type DeleteTieneParams struct {
 	JugadorIDJugador int32  `json:"jugador_id_jugador"`
-	JugadorNombre    string `json:"jugador_nombre"`
 	LesionTipoLesion string `json:"lesion_tipo_lesion"`
 }
 
 func (q *Queries) DeleteTiene(ctx context.Context, arg DeleteTieneParams) error {
-	_, err := q.db.ExecContext(ctx, deleteTiene, arg.JugadorIDJugador, arg.JugadorNombre, arg.LesionTipoLesion)
+	_, err := q.db.ExecContext(ctx, deleteTiene, arg.JugadorIDJugador, arg.LesionTipoLesion)
 	return err
 }
 
@@ -293,29 +275,22 @@ func (q *Queries) GetJugador(ctx context.Context, idJugador int32) (Jugador, err
 }
 
 const getJugo = `-- name: GetJugo :one
-SELECT fecha_inicio, fecha_fin, jugador_nombre, jugador_id_jugador, club_nombre, club_ciudad FROM Jugo
-WHERE Jugador_iD_Jugador = $1 AND Jugador_Nombre = $2 AND Club_Nombre = $3 AND Club_Ciudad = $4
+SELECT fecha_inicio, fecha_fin, jugador_id_jugador, club_nombre, club_ciudad FROM Jugo
+WHERE Jugador_iD_Jugador = $1 AND Club_Nombre = $2 AND Club_Ciudad = $3
 `
 
 type GetJugoParams struct {
 	JugadorIDJugador int32  `json:"jugador_id_jugador"`
-	JugadorNombre    string `json:"jugador_nombre"`
 	ClubNombre       string `json:"club_nombre"`
 	ClubCiudad       string `json:"club_ciudad"`
 }
 
 func (q *Queries) GetJugo(ctx context.Context, arg GetJugoParams) (Jugo, error) {
-	row := q.db.QueryRowContext(ctx, getJugo,
-		arg.JugadorIDJugador,
-		arg.JugadorNombre,
-		arg.ClubNombre,
-		arg.ClubCiudad,
-	)
+	row := q.db.QueryRowContext(ctx, getJugo, arg.JugadorIDJugador, arg.ClubNombre, arg.ClubCiudad)
 	var i Jugo
 	err := row.Scan(
 		&i.FechaInicio,
 		&i.FechaFin,
-		&i.JugadorNombre,
 		&i.JugadorIDJugador,
 		&i.ClubNombre,
 		&i.ClubCiudad,
@@ -347,23 +322,21 @@ func (q *Queries) GetPais(ctx context.Context, nombre string) (string, error) {
 }
 
 const getTiene = `-- name: GetTiene :one
-SELECT fecha_inicio, fecha_fin, jugador_nombre, jugador_id_jugador, lesion_tipo_lesion FROM Tiene
-WHERE Jugador_iD_Jugador = $1 AND Jugador_Nombre = $2 AND Lesion_Tipo_Lesion = $3
+SELECT fecha_inicio, fecha_fin, jugador_id_jugador, lesion_tipo_lesion FROM Tiene
+WHERE Jugador_iD_Jugador = $1 AND Lesion_Tipo_Lesion = $2
 `
 
 type GetTieneParams struct {
 	JugadorIDJugador int32  `json:"jugador_id_jugador"`
-	JugadorNombre    string `json:"jugador_nombre"`
 	LesionTipoLesion string `json:"lesion_tipo_lesion"`
 }
 
 func (q *Queries) GetTiene(ctx context.Context, arg GetTieneParams) (Tiene, error) {
-	row := q.db.QueryRowContext(ctx, getTiene, arg.JugadorIDJugador, arg.JugadorNombre, arg.LesionTipoLesion)
+	row := q.db.QueryRowContext(ctx, getTiene, arg.JugadorIDJugador, arg.LesionTipoLesion)
 	var i Tiene
 	err := row.Scan(
 		&i.FechaInicio,
 		&i.FechaFin,
-		&i.JugadorNombre,
 		&i.JugadorIDJugador,
 		&i.LesionTipoLesion,
 	)
@@ -466,7 +439,7 @@ func (q *Queries) ListJugadoresCompleto(ctx context.Context) ([]Jugador, error) 
 }
 
 const listJugos = `-- name: ListJugos :many
-SELECT fecha_inicio, fecha_fin, jugador_nombre, jugador_id_jugador, club_nombre, club_ciudad FROM Jugo
+SELECT fecha_inicio, fecha_fin, jugador_id_jugador, club_nombre, club_ciudad FROM Jugo
 `
 
 func (q *Queries) ListJugos(ctx context.Context) ([]Jugo, error) {
@@ -481,7 +454,6 @@ func (q *Queries) ListJugos(ctx context.Context) ([]Jugo, error) {
 		if err := rows.Scan(
 			&i.FechaInicio,
 			&i.FechaFin,
-			&i.JugadorNombre,
 			&i.JugadorIDJugador,
 			&i.ClubNombre,
 			&i.ClubCiudad,
@@ -554,7 +526,7 @@ func (q *Queries) ListPaises(ctx context.Context) ([]string, error) {
 }
 
 const listTienes = `-- name: ListTienes :many
-SELECT fecha_inicio, fecha_fin, jugador_nombre, jugador_id_jugador, lesion_tipo_lesion FROM Tiene
+SELECT fecha_inicio, fecha_fin, jugador_id_jugador, lesion_tipo_lesion FROM Tiene
 `
 
 func (q *Queries) ListTienes(ctx context.Context) ([]Tiene, error) {
@@ -569,7 +541,6 @@ func (q *Queries) ListTienes(ctx context.Context) ([]Tiene, error) {
 		if err := rows.Scan(
 			&i.FechaInicio,
 			&i.FechaFin,
-			&i.JugadorNombre,
 			&i.JugadorIDJugador,
 			&i.LesionTipoLesion,
 		); err != nil {
@@ -612,28 +583,28 @@ func (q *Queries) UpdateClub(ctx context.Context, arg UpdateClubParams) error {
 const updateJugador = `-- name: UpdateJugador :exec
 
 UPDATE Jugador
-SET Posicion = $1, Fecha_Nacimiento = $2, Altura = $3, Pais_Nombre = $4
-WHERE iD_Jugador = $5 AND Nombre = $6
+SET Nombre = $1, Posicion = $2, Fecha_Nacimiento = $3, Altura = $4, Pais_Nombre = $5
+WHERE iD_Jugador = $6
 `
 
 type UpdateJugadorParams struct {
+	Nombre          string    `json:"nombre"`
 	Posicion        string    `json:"posicion"`
 	FechaNacimiento time.Time `json:"fecha_nacimiento"`
 	Altura          int32     `json:"altura"`
 	PaisNombre      string    `json:"pais_nombre"`
 	IDJugador       int32     `json:"id_jugador"`
-	Nombre          string    `json:"nombre"`
 }
 
 // Una consulta para actualizar un registro (Update...).
 func (q *Queries) UpdateJugador(ctx context.Context, arg UpdateJugadorParams) error {
 	_, err := q.db.ExecContext(ctx, updateJugador,
+		arg.Nombre,
 		arg.Posicion,
 		arg.FechaNacimiento,
 		arg.Altura,
 		arg.PaisNombre,
 		arg.IDJugador,
-		arg.Nombre,
 	)
 	return err
 }
@@ -641,14 +612,13 @@ func (q *Queries) UpdateJugador(ctx context.Context, arg UpdateJugadorParams) er
 const updateJugo = `-- name: UpdateJugo :exec
 UPDATE Jugo
 SET fecha_inicio = $1, fecha_fin = $2
-WHERE Jugador_iD_Jugador = $3 AND Jugador_Nombre = $4 AND Club_Nombre = $5 AND Club_Ciudad = $6
+WHERE Jugador_iD_Jugador = $3 AND Club_Nombre = $4 AND Club_Ciudad = $5
 `
 
 type UpdateJugoParams struct {
 	FechaInicio      time.Time `json:"fecha_inicio"`
 	FechaFin         time.Time `json:"fecha_fin"`
 	JugadorIDJugador int32     `json:"jugador_id_jugador"`
-	JugadorNombre    string    `json:"jugador_nombre"`
 	ClubNombre       string    `json:"club_nombre"`
 	ClubCiudad       string    `json:"club_ciudad"`
 }
@@ -658,7 +628,6 @@ func (q *Queries) UpdateJugo(ctx context.Context, arg UpdateJugoParams) error {
 		arg.FechaInicio,
 		arg.FechaFin,
 		arg.JugadorIDJugador,
-		arg.JugadorNombre,
 		arg.ClubNombre,
 		arg.ClubCiudad,
 	)
@@ -700,14 +669,13 @@ func (q *Queries) UpdatePais(ctx context.Context, arg UpdatePaisParams) error {
 const updateTiene = `-- name: UpdateTiene :exec
 UPDATE Tiene
 SET fecha_inicio = $1, fecha_fin = $2
-WHERE Jugador_iD_Jugador = $3 AND Jugador_Nombre = $4 AND Lesion_Tipo_Lesion = $5
+WHERE Jugador_iD_Jugador = $3 AND Lesion_Tipo_Lesion = $4
 `
 
 type UpdateTieneParams struct {
 	FechaInicio      time.Time `json:"fecha_inicio"`
 	FechaFin         time.Time `json:"fecha_fin"`
 	JugadorIDJugador int32     `json:"jugador_id_jugador"`
-	JugadorNombre    string    `json:"jugador_nombre"`
 	LesionTipoLesion string    `json:"lesion_tipo_lesion"`
 }
 
@@ -716,7 +684,6 @@ func (q *Queries) UpdateTiene(ctx context.Context, arg UpdateTieneParams) error 
 		arg.FechaInicio,
 		arg.FechaFin,
 		arg.JugadorIDJugador,
-		arg.JugadorNombre,
 		arg.LesionTipoLesion,
 	)
 	return err

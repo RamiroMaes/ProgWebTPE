@@ -49,6 +49,8 @@ curl -X PUT -H "Content-Type: application/json" \
   --data '{"nombre": "Juan Perez", "id_jugador": 1, "posicion": "Mediocampista", "fecha_nacimiento": "1995-01-01T00:00:00Z", "altura": 180, "pais_nombre": "Argentina"}' \
   "$BASE_URL/jugadores/1"
 
+curl -X GET "$BASE_URL/plantel"
+
 #echo "\n borramos todo"
 #curl -X DELETE "$BASE_URL/jugadores/1/Juan%20Perez"
 #curl -X DELETE "$BASE_URL/clubs/PSG/Paris"

@@ -76,6 +76,22 @@ func ListJugadoresHandler(dbConn *sql.DB) http.HandlerFunc {
 	}
 }
 
+// GET /jugadoresCompleto
+func ListJugadoresCompletoHandler(dbConn *sql.DB) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		queries := db.New(dbConn)
+		all, err := queries.ListJugadoresCompleto(context.Background())
+		if err != nil {
+			http.Error(w, "db error: "+err.Error(), http.StatusInternalServerError)
+			return
+		}
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusOK)
+		json.NewEncoder(w).Encode(all)
+	}
+}
+
+
 // GET /jugadores/{id}
 func GetJugadorHandler(dbConn *sql.DB) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
@@ -125,10 +141,6 @@ func UpdateJugadorHandler(dbConn *sql.DB) http.HandlerFunc {
 			http.Error(w, "id en el cuerpo debe coincidir con el id en la ruta", http.StatusBadRequest)
 			return
 		}
-		if strings.TrimSpace(p.Nombre) == "" {
-			http.Error(w, "nombre es obligatorio (parte de PK)", http.StatusBadRequest)
-			return
-		}
 
 		// Lógica de DB
 		queries := db.New(dbConn)
@@ -148,7 +160,6 @@ func UpdateJugadorHandler(dbConn *sql.DB) http.HandlerFunc {
 func DeleteJugadorHandler(dbConn *sql.DB) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		idStr := r.PathValue("id")
-		nombre := r.PathValue("nombre") // No necesitamos ReplaceAll
 		
 		id64, err := strconv.ParseInt(idStr, 10, 32)
 		if err != nil {
@@ -156,11 +167,10 @@ func DeleteJugadorHandler(dbConn *sql.DB) http.HandlerFunc {
 			return
 		}
 		
+		id := int32(id64)
+
 		queries := db.New(dbConn)
-		err = queries.DeleteJugador(context.Background(), db.DeleteJugadorParams{
-			IDJugador: int32(id64),
-			Nombre:    nombre,
-		})
+		err = queries.DeleteJugador(context.Background(), id)
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return

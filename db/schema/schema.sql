@@ -18,18 +18,17 @@ CREATE TABLE Jugador (
     fecha_nacimiento date  NOT NULL,
     altura int  NOT NULL,
     Pais_Nombre varchar(40)  NOT NULL,
-    CONSTRAINT Jugador_pk PRIMARY KEY (Nombre,iD_Jugador)
+    CONSTRAINT Jugador_pk PRIMARY KEY (iD_Jugador)
 );
 
 -- Table: Jugo
 CREATE TABLE Jugo (
     fecha_inicio date  NOT NULL,
     fecha_fin date  NOT NULL,
-    Jugador_Nombre varchar(40)  NOT NULL,
     Jugador_iD_Jugador int  NOT NULL,
     Club_Nombre varchar(40)  NOT NULL,
     Club_Ciudad varchar(40)  NOT NULL,
-    CONSTRAINT Jugo_en PRIMARY KEY (Jugador_Nombre,Jugador_iD_Jugador,Club_Nombre,Club_Ciudad)
+    CONSTRAINT Jugo_en PRIMARY KEY (Jugador_iD_Jugador,Club_Nombre,Club_Ciudad)
 );
 
 -- Table: Lesion
@@ -49,10 +48,9 @@ CREATE TABLE Pais (
 CREATE TABLE Tiene (
     fecha_inicio date  NOT NULL,
     fecha_fin date  NOT NULL,
-    Jugador_Nombre varchar(40)  NOT NULL,
     Jugador_iD_Jugador int  NOT NULL,
     Lesion_Tipo_Lesion varchar(50)  NOT NULL,
-    CONSTRAINT Tiene_pk PRIMARY KEY (Jugador_Nombre,Jugador_iD_Jugador,Lesion_Tipo_Lesion)
+    CONSTRAINT Tiene_pk PRIMARY KEY (Jugador_iD_Jugador,Lesion_Tipo_Lesion)
 );
 
 -- foreign keys
@@ -74,16 +72,16 @@ ALTER TABLE Jugo ADD CONSTRAINT Jugo_Club
 
 -- Reference: Jugo_Jugador (table: Jugo)
 ALTER TABLE Jugo ADD CONSTRAINT Jugo_Jugador
-    FOREIGN KEY (Jugador_Nombre, Jugador_iD_Jugador)
-    REFERENCES Jugador (Nombre, iD_Jugador)  
+    FOREIGN KEY (Jugador_iD_Jugador)
+    REFERENCES Jugador (iD_Jugador)  
     NOT DEFERRABLE 
     INITIALLY IMMEDIATE
 ;
 
 -- Reference: Tiene_Jugador (table: Tiene)
 ALTER TABLE Tiene ADD CONSTRAINT Tiene_Jugador
-    FOREIGN KEY (Jugador_Nombre, Jugador_iD_Jugador)
-    REFERENCES Jugador (Nombre, iD_Jugador)  
+    FOREIGN KEY (Jugador_iD_Jugador)
+    REFERENCES Jugador (iD_Jugador)  
     NOT DEFERRABLE 
     INITIALLY IMMEDIATE
 ;

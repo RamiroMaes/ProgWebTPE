@@ -1,83 +1,26 @@
-Nombre del contenedor de DOcker:
-    some-postgres
-Usuario de la base de datos:
-    postgres
-Nombre de la base de datos:
-    tpespecial
-Contraseña:
-    XYZ
+## Requisitos Previos
 
-Pasos:
-    1-Primeramente se debe contar con el lenguaje 'Go', la plataforma 'Docker' y 'sqlc' instalados en el sistema.
-    3- Tener iniciado Docker en el sistema.
-    3-correr por la consola del directorio del proyecto:
-        a- docker run --name some-postgres -e POSTGRES_PASSWORD=XYZ -p 5432:5432 -d postgres:16
-            -esto crea un contenedor, si este no existe previamente. Tener en cuenta que el numero de puerto debe estar libre.
+Es requisito obligatorio tener instalados en tu sistema:
+*   [Go]https://go.dev/doc/install (versión 1.25.0 o superior)
+*   [Docker]https://docs.docker.com/get-docker/
+*   [sqlc]https://docs.sqlc.dev/en/latest/overview/install.html
 
-        b- docker exec -it some-postgres psql -U postgres
-            -Se conecta al servidor de Postgres.
+Usando el Makefile:
 
-        c- CREATE DATABASE tpespecial;
-            -Se crea la base de datos.
+### 1: Probar la API
 
-        d-\q
-            -Dentro del servidor de Postgres, para volver a la terminal del contenedor
-        e- cat ./db/schema/schema.sql | docker exec -i -e PGPASSWORD=XYZ some-postgres psql -U postgres -d tpespecial
-            -creamos las tablas que se encuentran en schema.sql
-            
-        f- go run .
-            -tener en cuenta que se debe modificar la linea 16 del main en caso de que se haya utilizado cierto dato diferente.
-            -Asi, se corre el programa, esperando como respuesta:
-            
-                Conexión exitosa a la base de datos
+* El proyecto incluye un script de prueba para verificar que este funcione correctamente. Este comando configurará la base de datos, iniciará el servidor, ejecutará las pruebas y luego lo detendrá todo.
 
-                Creando Países de prueba
-                País 'Argentina' creado o ya existente.
-                País 'Francia' creado o ya existente.
+* Notese que las pruebas son cargadas desde un archivo llamada requests.bash. Este contiene sentencias CURL.
 
-                Creando un jugador de prueba
-                Jugador creado: {Nombre:Lionel Messi IDJugador:10 Posicion:Delantero FechaNacimiento:1987-06-24 00:00:00 +0000 +0000 Altura:1.70 PaisNombre:Argentina}
+* Ejecutar por consola:
+        make test
 
-                Obteniendo el jugador por ID
-                Jugador obtenido: {Nombre:Lionel Messi IDJugador:10 Posicion:Delantero FechaNacimiento:1987-06-24 00:00:00 +0000 +0000 Altura:1.70 PaisNombre:Argentina}
+### 2: Limpieza
 
-                Actualizando el jugador
-                Jugador actualizado.
-                Datos después de actualizar: Posición -> Mediapunta
+* Para detener y eliminar el contenedor de la base de datos creado mediante el comando 'make test', podes usar:
+        make clean
 
-                Listando todos los jugadores
-                Jugadores encontrados (1):
-                - ID: 10, Nombre: Lionel Messi, Posición: Mediapunta
+### 3: Extras
 
-                Probando crear un Club
-                Club creado: {Nombre:River Plate Ciudad:Buenos Aires}
-                Clubes encontrados (1):
-                - Nombre: River Plate, Ciudad: Buenos Aires
-                Relacion Jugador-Club creada: {FechaInicio:2020-01-01 00:00:00 +0000 +0000 FechaFin:2023-12-31 00:00:00 +0000 +0000 JugadorNombre:Lionel Messi JugadorIDJugador:10 ClubNombre:River Plate ClubCiudad:Buenos Aires}
-                Relacion Jugador-Club (jugo) borrada.
-                Club 'River Plate' borrado.
-
-                Borrando el jugador
-                Jugador borrado exitosamente.
-
-                Borrando los países de prueba
-                País 'Argentina' borrado o no existía.
-                País 'Francia' borrado o no existía.
-
-                Creando una lesion de prueba
-                Lesion creada: {TipoLesion:Esguince Descripcion:Esguince de tobillo leve}
-
-                Obteniendo la lesion por su tipo
-                Lesion obtenida: {TipoLesion:Esguince Descripcion:Esguince de tobillo leve}
-
-                Listando todas las lesiones
-                Lesiones encontradas (1):
-                -Tipo: Esguince, Descripción: Esguince de tobillo leve
-
-                Borrando la lesion
-                Lesion 'Esguince' borrado o no existía.
-
-
-
-    -docker exec -it -e PGPASSWORD=XYZ some-postgres psql -U postgres -d tpespecial
-        -Si se quiere reconectar a la base
+* En el archivo de Makefile se ven ademas posibles comandos make para realizar instancias temporales de 'make test'

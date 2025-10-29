@@ -87,9 +87,6 @@ async function enviarFormulario(event) {
         altura: parseInt(document.getElementById('altura').value)
     };
     
-    // DEBUG: Ver qué estamos enviando
-    console.log('Datos a enviar:', nuevoJugador);
-
     try {
         // Enviar POST a la API
         const response = await fetch('/jugadores', {
@@ -124,7 +121,7 @@ async function enviarFormulario(event) {
 }
 
 // Handler de eliminación con delegación de eventos en el tbody
-async function onClickTabla(e) {
+async function eliminarEntrada(e) {
     if (!e.target.closest('.eliminar')) return; //Verificamos que el click provino de un botón con clase "".btn-eliminar"
 
     const row = e.target.closest('tr'); //Buscamos fila asociada
@@ -152,7 +149,7 @@ function inicializar() {
 
     //evento para asi poder eliminar jugadores con un click
     const tbody = jugadores.querySelector('tbody');
-    tbody.addEventListener('click', onClickTabla);
+    tbody.addEventListener('click', eliminarEntrada);
 }
 
 document.addEventListener('DOMContentLoaded', inicializar);

@@ -1,0 +1,83 @@
+body {
+    margin: 0;
+    padding: 0;
+    display: flex;
+    justify-content: center; /* Centra horizontalmente */
+    min-height: 100vh;
+    background-color: #10412c;
+}
+
+.grid-container {
+    display: grid;
+    grid-template-columns: 1fr; /* Una sola columna que ocupa todo el ancho */
+    grid-template-rows: auto 1fr auto; /* Header (auto), contenido (flexible), footer (auto) */
+    grid-template-areas:
+        "header"
+        "content"
+        "footer";
+    
+    background-color: #f9f9f9;
+    border: 1px solid #ddd;
+    min-height: 100vh;
+    min-width: 800px; 
+    width: max-content; /* ← Se ajusta al contenido más ancho */
+}
+
+.grid-item {
+    background-color: #204c52;
+    padding: 15px;
+    border: 1px solid #00bcd4;
+}
+
+
+.header {
+    grid-area: header;
+    background-color: #012d29;
+    text-align: center;
+    color: white;
+}
+
+.content {
+    grid-area: content;
+    background-color: #e5e5e5;
+    display: flex;
+    justify-content: center; /* Centra horizontalmente */
+    align-items: flex-start; /* Alinea arriba (en lugar de center) */
+    padding: 20px;
+}
+
+
+
+.footer {
+    grid-area: footer;
+    background-color: #018001;
+    
+    /* Centrar el formulario horizontalmente */
+    display: flex;
+    flex-direction: column;
+    align-items: center; /* Centra horizontalmente */
+    justify-content: center; /* Centra verticalmente (opcional) */
+}
+
+/* El formulario dentro del footer */
+.footer form {
+    text-align: left; /* Texto alineado a la izquierda */
+    color: white;
+    max-width: 500px; /* Ancho máximo del formulario (ajusta según necesites) */
+    width: 100%; /* Ocupa el ancho disponible hasta max-width */
+}
+
+/* Espaciado entre cada input/select */
+.footer form input,
+.footer form select {
+    margin-bottom: 15px; /* Espacio debajo de cada campo */
+    padding: 8px; /* Espacio interno del campo */
+    width: 100%; /* Opcional: que ocupen todo el ancho */
+    box-sizing: border-box; /* Incluye padding en el ancho total */
+}
+
+/* Espaciado para el botón */
+.footer form button {
+    margin-top: 10px; /* Espacio extra antes del botón */
+    padding: 10px 20px;
+}

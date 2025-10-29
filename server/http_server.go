@@ -56,13 +56,16 @@ func StartServer(connStr string, addr string) error {
 	// mux.HandleFunc("POST /jugadores/{id}/lesiones", h.CreateTieneHandler(dbConn))
 
 	// --- ARCHIVOS ESTÁTICOS ---
-    // Servir index.html en la raíz
-    mux.HandleFunc("GET /{$}", func(w http.ResponseWriter, r *http.Request) {
-        http.ServeFile(w, r, "./index.html")
-    })
+	// Servir index.html en la raíz exacta
+	mux.HandleFunc("GET /{$}", func(w http.ResponseWriter, r *http.Request) {
+		http.ServeFile(w, r, "./index.html")
+	})
 
-	fs := http.FileServer(http.Dir("."))
-	mux.Handle("GET /", fs)
+	// Servir otros archivos estáticos (JS, CSS, etc.)
+	mux.HandleFunc("GET /{file}", func(w http.ResponseWriter, r *http.Request) {
+		file := r.PathValue("file")
+		http.ServeFile(w, r, "./"+file)
+	})
 
 	// Inicia el servidor
 	log.Printf("Servidor escuchando en %s\n", addr)

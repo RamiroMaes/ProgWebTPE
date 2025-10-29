@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>TP4 - Ejercicio 5</title>
-    <link rel="stylesheet" href="styles.css"/>
 </head>
 <body>
 
@@ -28,24 +27,26 @@
         </main>
         
         <footer class="grid-item footer">Agregar jugador
-            <form action="/submit" method="POST">
+            <form>
                 Posición:
-                <select name="agregarPosicion">
-                    <option value="arquero">Arquero</option>
+                <select id="posicion" name="agregarPosicion">
+                    <option value="Arquero">Arquero</option>
                     <option value="Defensor">Defensor</option>
-                    <option valur="Mediocampista">Mediocampista</option>
-                    <option valur="Delantero">Delantero</option>
+                    <option value="Mediocampista">Mediocampista</option>
+                    <option value="Delantero">Delantero</option>
                 </select><br/>
-                Número:
-                <input type="number" name="agregarNumero" required/><br/>
-                Nombre completo:
-                <input type="text" name="agregarNombre" required/><br/>
-                Nacionalidad:
-                <input type="text" name="agregarPais" required/><br/>
-                Fecha de nacimiento:
-                <input type="date" name="agregarFechaNacimiento" required/><br/>
-                Altura:
-                <input type="number" name="agregarAltura" required/><br/>
+                
+                    Número:
+                    <input id="numero" type="number" name="agregarNumero" required/><br/>
+                    Nombre completo:
+                    <input id="nombre" type="text" name="agregarNombre" required/><br/>
+                    Pais:
+                    <input id="pais" type="text" name="agregarPais" required/><br/>
+                    Fecha de nacimiento:
+                    <input id="fecha_nacimiento" type="date" name="agregarFechaNacimiento" required/><br/>
+                    Altura:
+                    <input id="altura" type="number" name="agregarAltura" required/><br/>
+                
                 
                 <button type="submit">Enviar</button>
             </form>

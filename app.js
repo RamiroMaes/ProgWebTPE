@@ -17,6 +17,11 @@ async function cargarPlantel() {
     }
 }
 
+// Funcion para eliminar la hora en la fecha de nacimiento.
+function formatearFecha(fechaString) {
+    return fechaString.split('T')[0]; // Toma solo la parte antes de la 'T'
+}
+
 function construirTabla(jugadores) {
     const tabla = document.getElementById("tabla-jugadores");
     const tbody = tabla.querySelector("tbody");
@@ -30,8 +35,8 @@ function construirTabla(jugadores) {
                 <td>${jugador.posicion}</td>
                 <td>${jugador.id_jugador}</td>
                 <td>${jugador.nombre}</td>
-                <td>${jugador.pais}</td>
-                <td>${jugador.fecha_nacimiento}</td>
+                <td>${jugador.pais_nombre}</td>
+                <td>${formatearFecha(jugador.fecha_nacimiento)}</td>
                 <td>${jugador.altura}</td>
             </tr>
         `;
@@ -41,3 +46,4 @@ function construirTabla(jugadores) {
 
 // Llama a la función cuando el DOM esté listo
 document.addEventListener('DOMContentLoaded', cargarPlantel);
+

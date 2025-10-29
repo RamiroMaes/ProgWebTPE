@@ -31,13 +31,16 @@ function construirTabla(jugadores) {
     // Itera sobre los jugadores y crea las filas
     for (const jugador of jugadores) {
         const fila = `
-            <tr>
+            <tr data-id="${jugador.id_jugador}" data-nombre="${jugador.nombre}">
                 <td>${jugador.posicion}</td>
                 <td>${jugador.id_jugador}</td>
                 <td>${jugador.nombre}</td>
                 <td>${jugador.pais_nombre}</td>
                 <td>${formatearFecha(jugador.fecha_nacimiento)}</td>
                 <td>${jugador.altura}</td>
+                <td>
+                    <button class= "eliminar" type="button">Eliminar</button>
+                </td>
             </tr>
         `;
         tbody.innerHTML += fila; // Agrega la fila al cuerpo de la tabla
@@ -50,13 +53,16 @@ function agregarFilaATabla(jugador) {
     const tbody = tabla.querySelector("tbody");
     
     const fila = `
-        <tr>
+        <tr data-id="${jugador.id_jugador}" data-nombre="${jugador.nombre}">
             <td>${jugador.posicion}</td>
             <td>${jugador.id_jugador}</td>
             <td>${jugador.nombre}</td>
             <td>${jugador.pais_nombre}</td>
             <td>${formatearFecha(jugador.fecha_nacimiento)}</td>
             <td>${jugador.altura}</td>
+            <td>
+                <button class="eliminar" type="button">Eliminar</button>
+            </td>
         </tr>
     `;
     tbody.innerHTML += fila;
@@ -117,13 +123,36 @@ async function enviarFormulario(event) {
     }
 }
 
+// Handler de eliminación con delegación de eventos en el tbody
+async function onClickTabla(e) {
+    if (!e.target.closest('.eliminar')) return; //Verificamos que el click provino de un botón con clase "".btn-eliminar"
+
+    const row = e.target.closest('tr'); //Buscamos fila asociada
+    const { id, nombre } = row.dataset; //Evitamos hacer llamadas invalidas
+    if (!id) return;
+
+    if (!confirm(`Eliminar jugador ${nombre} (ID ${id})?`)) return;
+
+    try {
+        const res = await fetch(`/jugadores/${id}/${encodeURIComponent(nombre)}`, { method: 'DELETE' });
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        row.remove();
+    } catch (err) {
+        console.error('Error eliminando jugador:', err);
+    }
+}
+
 // Event listeners
 function inicializar() {
     cargarPlantel();
-    
-    // Capturar el formulario y agregar el listener
+
+    //Capturamos el formulario y agregamos el listener
     const form = document.querySelector('form');
     form.addEventListener('submit', enviarFormulario);
+
+    //evento para asi poder eliminar jugadores con un click
+    const tbody = jugadores.querySelector('tbody');
+    tbody.addEventListener('click', onClickTabla);
 }
 
 document.addEventListener('DOMContentLoaded', inicializar);

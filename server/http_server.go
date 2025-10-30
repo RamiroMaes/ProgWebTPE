@@ -61,6 +61,9 @@ func StartServer(connStr string, addr string) error {
 		http.ServeFile(w, r, "./index.html")
 	})
 
+	// Servir carpeta de imágenes
+    mux.Handle("GET /img/", http.StripPrefix("/img/", http.FileServer(http.Dir("./img"))))
+
 	// Servir otros archivos estáticos (JS, CSS, etc.)
 	mux.HandleFunc("GET /{file}", func(w http.ResponseWriter, r *http.Request) {
 		file := r.PathValue("file")

@@ -33,8 +33,24 @@ body {
 .header {
     grid-area: header;
     background-color: #012d29;
-    text-align: center;
     color: white;
+    display: grid;
+    grid-template-columns: auto 1fr; /* logo | título */
+    align-items: center;
+    column-gap: 16px;
+    padding: 15px 20px;
+}
+
+.header-logo {
+    height: 72px; 
+    width: auto;
+    justify-self: start;
+}
+
+.header h1 {
+    margin: 0;
+    text-align: center;
+    justify-self: center;
 }
 
 .content {
@@ -46,7 +62,37 @@ body {
     padding: 20px;
 }
 
+/* Estilos de la tabla */
+#tabla-jugadores {
+    border-collapse: collapse;
+    width: auto; /* Se ajusta a su contenido */
+}
 
+/* Centrar texto en celdas del encabezado */
+#tabla-jugadores thead th {
+    text-align: center;
+    padding: 12px;
+    border: 1px solid #ddd;
+    background-color: #f0f0f0;
+    font-weight: bold;
+}
+
+/* Centrar texto en celdas del cuerpo */
+#tabla-jugadores tbody td {
+    text-align: center;
+    padding: 10px;
+    border: 1px solid #ddd;
+}
+
+/* Título del formulario centrado */
+.form-titulo {
+    text-align: center;
+    width: 100%;
+    font-size: 1.2em;
+    font-weight: bold;
+    margin-bottom: 20px;
+    color: white;
+}
 
 .footer {
     grid-area: footer;

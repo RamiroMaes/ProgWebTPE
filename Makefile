@@ -5,7 +5,7 @@ DB_PASSWORD=XYZ
 DB_NAME=tpespecial
 POSTGRES_IMAGE=postgres:16
 HTTP_PORT ?= 8080
-TEST_FILE ?= requests.bash
+TEST_FILE ?=requests.bash
 
 # Lista de todas las reglas "phony"
 .PHONY: all setup container-start container-wait db-create db-schema test clean

@@ -30,7 +30,7 @@ func StartServer(connStr string, addr string) error {
 	mux.HandleFunc("POST /jugadores", h.CreateJugadorHandler(dbConn))
 	mux.HandleFunc("GET /jugadores/{id}", h.GetJugadorHandler(dbConn))
 	mux.HandleFunc("PUT /jugadores/{id}", h.UpdateJugadorHandler(dbConn))
-	mux.HandleFunc("DELETE /jugadores/{id}/{nombre}", h.DeleteJugadorHandler(dbConn))
+	mux.HandleFunc("DELETE /jugadores/{id}", h.DeleteJugadorHandler(dbConn))
 
 	// --- CLUBS ---
 	mux.HandleFunc("GET /clubs", h.ListClubsHandler(dbConn))

@@ -8,9 +8,9 @@ async function cargarPlantel() {
             throw new Error(`Error HTTP: ${response.status}`);
         }
 
-        const jugadores = await response.json();
-        
-        construirTabla(jugadores);
+        const jugadoresData = await response.json();
+
+        construirTabla(jugadoresData);
 
     } catch (error) {
         console.error("Error al cargar jugadores:", error);
@@ -29,9 +29,10 @@ function construirTabla(jugadores) {
     tbody.innerHTML = ""; // Se limpia la tabla por si acaso
 
     // Itera sobre los jugadores y crea las filas
+    //data lo utilizamos para obtener el jugador que se desea eliminar. Se utiliza data debio a posibles cambios en el orden de las columnas.
     for (const jugador of jugadores) {
         const fila = `
-            <tr data-id="${jugador.id_jugador}" data-nombre="${jugador.nombre}">
+            <tr data-id="${jugador.id_jugador}">
                 <td>${jugador.posicion}</td>
                 <td>${jugador.id_jugador}</td>
                 <td>${jugador.nombre}</td>
@@ -48,12 +49,13 @@ function construirTabla(jugadores) {
 }
 
 // Función para agregar UN jugador a la tabla (sin recargar todo)
+//data lo utilizamos para obtener el jugador que se desea eliminar. Se utiliza data debio a posibles cambios en el orden de las columnas.
 function agregarFilaATabla(jugador) {
     const tabla = document.getElementById("tabla-jugadores");
     const tbody = tabla.querySelector("tbody");
     
     const fila = `
-        <tr data-id="${jugador.id_jugador}" data-nombre="${jugador.nombre}">
+        <tr data-id="${jugador.id_jugador}"> 
             <td>${jugador.posicion}</td>
             <td>${jugador.id_jugador}</td>
             <td>${jugador.nombre}</td>
@@ -122,20 +124,21 @@ async function enviarFormulario(event) {
 
 // Handler de eliminación con delegación de eventos en el tbody
 async function eliminarEntrada(e) {
-    if (!e.target.closest('.eliminar')) return; //Verificamos que el click provino de un botón con clase "".btn-eliminar"
+    if (!e.target.closest('.eliminar')) return; //Condicion aceptada si se hace click en boton eliminar
 
-    const row = e.target.closest('tr'); //Buscamos fila asociada
-    const { id, nombre } = row.dataset; //Evitamos hacer llamadas invalidas
+    const row = e.target.closest('tr'); //para esto usamos data en la fila
+    const id = row.dataset.id; 
     if (!id) return;
 
-    if (!confirm(`Eliminar jugador ${nombre} (ID ${id})?`)) return;
+    if (!confirm(`Eliminar jugador ID ${id}?`)) return;
 
     try {
-        const res = await fetch(`/jugadores/${id}/${encodeURIComponent(nombre)}`, { method: 'DELETE' });
+        const res = await fetch(`/jugadores/${encodeURIComponent(id)}`, { method: 'DELETE' });
         if (!res.ok) throw new Error(`HTTP ${res.status}`);
         row.remove();
     } catch (err) {
         console.error('Error eliminando jugador:', err);
+        alert('No se pudo eliminar el jugador.');
     }
 }
 

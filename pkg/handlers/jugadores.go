@@ -156,26 +156,26 @@ func UpdateJugadorHandler(dbConn *sql.DB) http.HandlerFunc {
 	}
 }
 
-// DELETE /jugadores/{id}/{nombre}
+// DELETE /jugadores/{id}
 func DeleteJugadorHandler(dbConn *sql.DB) http.HandlerFunc {
-	return func(w http.ResponseWriter, r *http.Request) {
-		idStr := r.PathValue("id")
-		
-		id64, err := strconv.ParseInt(idStr, 10, 32)
-		if err != nil {
-			http.Error(w, "invalid id", http.StatusBadRequest)
-			return
-		}
-		
-		id := int32(id64)
+    return func(w http.ResponseWriter, r *http.Request) {
+        idStr := r.PathValue("id")
+        id64, err := strconv.ParseInt(idStr, 10, 32)
+        if err != nil {
+            http.Error(w, "invalid id", http.StatusBadRequest)
+            return
+        }
+        id := int32(id64)
 
-		queries := db.New(dbConn)
-		err = queries.DeleteJugador(context.Background(), id)
-		if err != nil {
-			http.Error(w, err.Error(), http.StatusInternalServerError)
-			return
-		}
-		
-		w.WriteHeader(http.StatusNoContent)
-	}
+        queries := db.New(dbConn)
+        if err := queries.DeleteJugador(r.Context(), id); err != nil {
+            if errors.Is(err, sql.ErrNoRows) {
+                http.NotFound(w, r)
+                return
+            }
+            http.Error(w, err.Error(), http.StatusInternalServerError)
+            return
+        }
+        w.WriteHeader(http.StatusNoContent)
+    }
 }

@@ -18,8 +18,9 @@ Usando el Makefile:
 
 ### 2: Limpieza
 
-* Para detener y eliminar el contenedor de la base de datos creado mediante el comando 'make test', podes usar:
+* Para detener y eliminar el contenedor con la base de datos creado mediante el comando 'make test', podes usar:
         make clean
+* Ademas este comando limpia el puerto iniciado.
 
 ### 3: Extras
 

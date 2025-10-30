@@ -54,6 +54,8 @@ test: setup
 
 # Limpieza de contenedor
 clean:
+	@echo "Deteniendo servidor en :$(HTTP_PORT) (si existe)..."
+	@lsof -t -i:$(HTTP_PORT) | xargs kill 2>/dev/null || true
 	@echo "Limpiando contenedor"
-	@docker stop $(CONTAINER_NAME) >/dev/null 2>&1 || true # (Basado en fuente 9)
-	@docker rm  $(CONTAINER_NAME) >/dev/null 2>&1 || true # (Basado en fuente 9)
+	@docker stop $(CONTAINER_NAME) >/dev/null 2>&1 || true #
+	@docker rm  $(CONTAINER_NAME) >/dev/null 2>&1 || true #

@@ -5,6 +5,7 @@ body {
     justify-content: center; /* Centra horizontalmente */
     min-height: 100vh;
     background-color: #10412c;
+    font-family: Arial, Helvetica, sans-serif;
 }
 
 .grid-container {
@@ -15,9 +16,7 @@ body {
         "header"
         "content"
         "footer";
-    
     background-color: #f9f9f9;
-    border: 1px solid #ddd;
     min-height: 100vh;
     min-width: 800px; 
     width: max-content; /* ← Se ajusta al contenido más ancho */
@@ -26,31 +25,25 @@ body {
 .grid-item {
     background-color: #204c52;
     padding: 15px;
-    border: 1px solid #00bcd4;
 }
 
 
 .header {
     grid-area: header;
-    background-color: #012d29;
+    background-color: #00612d;
     color: white;
-    display: grid;
-    grid-template-columns: auto 1fr; /* logo | título */
+    display: flex;
+    justify-content: center;     /* centra el bloque completo */
     align-items: center;
-    column-gap: 16px;
+    gap: 16px;   
     padding: 15px 20px;
 }
 
 .header-logo {
-    height: 72px; 
+    position: static;            /* por si estaba absolute */
+    height: 72px;
     width: auto;
-    justify-self: start;
-}
-
-.header h1 {
     margin: 0;
-    text-align: center;
-    justify-self: center;
 }
 
 .content {
@@ -59,21 +52,23 @@ body {
     display: flex;
     justify-content: center; /* Centra horizontalmente */
     align-items: flex-start; /* Alinea arriba (en lugar de center) */
-    padding: 20px;
+    padding: 0;
 }
 
 /* Estilos de la tabla */
 #tabla-jugadores {
     border-collapse: collapse;
     width: auto; /* Se ajusta a su contenido */
+    border: 2px solid #828282; 
 }
 
 /* Centrar texto en celdas del encabezado */
 #tabla-jugadores thead th {
     text-align: center;
     padding: 12px;
-    border: 1px solid #ddd;
-    background-color: #f0f0f0;
+    border: 2px solid #828282;
+    color: white;
+    background-color: #000000;
     font-weight: bold;
 }
 
@@ -81,28 +76,53 @@ body {
 #tabla-jugadores tbody td {
     text-align: center;
     padding: 10px;
-    border: 1px solid #ddd;
+    border: 2px solid #828282;
 }
 
-/* Título del formulario centrado */
-.form-titulo {
-    text-align: center;
-    width: 100%;
-    font-size: 1.2em;
-    font-weight: bold;
-    margin-bottom: 20px;
-    color: white;
+/* Filas alternadas (zebra) en el cuerpo de la tabla */
+#tabla-jugadores tbody tr:nth-child(odd) {
+  background-color: #d4d4d4; /* impar */
+}
+#tabla-jugadores tbody tr:nth-child(even) {
+  background-color: #e4e4e4; /* par */
+}
+
+/* Pintar header de boton eliminar de gris */
+#tabla-jugadores thead th.columna-eliminar{
+    background-color: #828282;
+}
+
+/* Columna de 'Eliminar' (última columna) */
+#tabla-jugadores tbody td.celda-eliminar {
+  background-color: #828282;   
+  text-align: center;
+  white-space: nowrap;
+  width: 90px;                
 }
 
 .footer {
     grid-area: footer;
     background-color: #018001;
-    
+    padding: 0;
     /* Centrar el formulario horizontalmente */
     display: flex;
     flex-direction: column;
     align-items: center; /* Centra horizontalmente */
     justify-content: center; /* Centra verticalmente (opcional) */
+}
+
+/* Título del formulario centrado */
+.form-titulo {
+    display: block;
+    background: #00612d;
+    width: 878px;
+    text-align: center;
+    
+    font-size: 1.5em;
+    font-weight: bold;
+    margin-bottom: 20px;
+    color: white;
+    padding: 12px 16px;
 }
 
 /* El formulario dentro del footer */
@@ -111,6 +131,10 @@ body {
     color: white;
     max-width: 500px; /* Ancho máximo del formulario (ajusta según necesites) */
     width: 100%; /* Ocupa el ancho disponible hasta max-width */
+    border: 2px solid #828282;
+    padding: 20px;
+    background-color: #00612d;
+    margin-bottom: 24px;
 }
 
 /* Espaciado entre cada input/select */

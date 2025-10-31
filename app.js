@@ -39,7 +39,7 @@ function construirTabla(jugadores) {
                 <td>${jugador.pais_nombre}</td>
                 <td>${formatearFecha(jugador.fecha_nacimiento)}</td>
                 <td>${jugador.altura}</td>
-                <td>
+                <td class=celda-eliminar>
                     <button class= "eliminar" type="button">Eliminar</button>
                 </td>
             </tr>
@@ -130,7 +130,7 @@ async function eliminarEntrada(e) {
     const id = row.dataset.id; 
     if (!id) return;
 
-    if (!confirm(`Eliminar jugador ID ${id}?`)) return;
+    if (!confirm(`Desea eliminar al jugador número ${id}?`)) return;
 
     try {
         const res = await fetch(`/jugadores/${encodeURIComponent(id)}`, { method: 'DELETE' });

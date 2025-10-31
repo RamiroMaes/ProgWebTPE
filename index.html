@@ -22,7 +22,8 @@
                         <th>Nombre</th>
                         <th>País</th>
                         <th>Fecha de Nacimiento</th>
-                        <th>Altura</th>
+                        <th>Altura (cm)</th>
+                        <th class="columna-eliminar"></th>
                     </tr>
                 </thead>
                 <tbody></tbody>
@@ -32,7 +33,7 @@
         <footer class="grid-item footer">
             <div class="form-titulo">Agregar jugador</div>
             <form>
-                Posición:
+                Posición (seleccione una):
                 <select id="posicion" name="agregarPosicion">
                     <option value="Arquero">Arquero</option>
                     <option value="Defensor">Defensor</option>
@@ -48,7 +49,7 @@
                     <input id="pais" type="text" name="agregarPais" required/><br/>
                     Fecha de nacimiento:
                     <input id="fecha_nacimiento" type="date" name="agregarFechaNacimiento" required/><br/>
-                    Altura:
+                    Altura (cm):
                     <input id="altura" type="number" name="agregarAltura" required/><br/>
                 
                 

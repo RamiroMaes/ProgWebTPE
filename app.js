@@ -1,5 +1,6 @@
 const jugadores = document.getElementById("tabla-jugadores");
 
+// Funcion para cargar los jugadores desde la base de datos.
 async function cargarPlantel() {
     try {
         const response = await fetch('/plantel');
@@ -17,22 +18,21 @@ async function cargarPlantel() {
     }
 }
 
-// Funcion para eliminar la hora en la fecha de nacimiento.
+// Funcion para formatear la fecha de nacimiento correctamente.
 function formatearFecha(fechaString) {
-    return fechaString.split('T')[0]; // Toma solo la parte antes de la 'T'
+    return fechaString.split('T')[0]; // Toma solo la parte antes de la 'T'.
 }
 
 function construirTabla(jugadores) {
     const tabla = document.getElementById("tabla-jugadores");
     const tbody = tabla.querySelector("tbody");
     
-    tbody.innerHTML = ""; // Se limpia la tabla por si acaso
+    tbody.innerHTML = ""; // Se limpia la tabla por si acaso.
 
-    // Itera sobre los jugadores y crea las filas
-    //data lo utilizamos para obtener el jugador que se desea eliminar. Se utiliza data debio a posibles cambios en el orden de las columnas.
+    // Itera sobre los jugadores y crea las filas.
     for (const jugador of jugadores) {
         const fila = `
-            <tr data-id="${jugador.id_jugador}">
+            <tr data-id="${jugador.id_jugador}">    <!-- Data lo utilizamos para luego obtener el jugador que se desea eliminar. -->
                 <td>${jugador.posicion}</td>
                 <td>${jugador.id_jugador}</td>
                 <td>${jugador.nombre}</td>
@@ -44,12 +44,11 @@ function construirTabla(jugadores) {
                 </td>
             </tr>
         `;
-        tbody.innerHTML += fila; // Agrega la fila al cuerpo de la tabla
+        tbody.innerHTML += fila; // Agrega la fila al cuerpo de la tabla.
     }
 }
 
-// Función para agregar UN jugador a la tabla (sin recargar todo)
-//data lo utilizamos para obtener el jugador que se desea eliminar. Se utiliza data debio a posibles cambios en el orden de las columnas.
+// Función para agregar UN jugador a la tabla (sin recargar todo).
 function agregarFilaATabla(jugador) {
     const tabla = document.getElementById("tabla-jugadores");
     const tbody = tabla.querySelector("tbody");
@@ -70,16 +69,17 @@ function agregarFilaATabla(jugador) {
     tbody.innerHTML += fila;
 }
 
-// Función para manejar el envío del formulario
+// Función para manejar el envío del formulario.
 async function enviarFormulario(event) {
-    event.preventDefault(); // Previene el envío por defecto (que recarga la página)
+    event.preventDefault(); // Previene el envío por defecto (que recarga la página).
 
     // Capturar los valores del formulario
     const fechaInput = document.getElementById('fecha_nacimiento').value;
-    // Convertir "2025-10-03" a "2025-10-03T00:00:00Z"
+
+    // Hacer lo inverso a lo hecho previamente con la fecha de nacimiento.
     const fechaISO = fechaInput + "T00:00:00Z";
 
-    // Capturar los valores del formulario
+    // Capturar los valores del formulario.
     const nuevoJugador = {
         posicion: document.getElementById('posicion').value,
         id_jugador: parseInt(document.getElementById('numero').value),
@@ -90,7 +90,7 @@ async function enviarFormulario(event) {
     };
     
     try {
-        // Enviar POST a la API
+        // Enviar con POST a la API.
         const response = await fetch('/jugadores', {
             method: 'POST',
             headers: {
@@ -104,14 +104,13 @@ async function enviarFormulario(event) {
             throw new Error(`Error HTTP: ${response.status} - ${errorText}`);
         }
 
-        // Leer la respuesta UNA SOLA VEZ
+        // Leer la respuesta UNA SOLA VEZ.
         const jugadorCreado = await response.json();
         console.log('Jugador creado:', jugadorCreado);
         
-        // Agregar el jugador a la tabla
         agregarFilaATabla(jugadorCreado);
         
-        // Limpiar el formulario
+        // Limpiar el formulario.
         event.target.reset();
         
         alert('Jugador agregado exitosamente!');
@@ -122,11 +121,11 @@ async function enviarFormulario(event) {
     }
 }
 
-// Handler de eliminación con delegación de eventos en el tbody
+// Funcion para eliminar un jugador de la tabla.
 async function eliminarEntrada(e) {
-    if (!e.target.closest('.eliminar')) return; //Condicion aceptada si se hace click en boton eliminar
+    if (!e.target.closest('.eliminar')) return; // Condicion aceptada si se hace click en boton eliminar.
 
-    const row = e.target.closest('tr'); //para esto usamos data en la fila
+    const row = e.target.closest('tr'); // Para esto usamos data en la fila.
     const id = row.dataset.id; 
     if (!id) return;
 
@@ -142,17 +141,18 @@ async function eliminarEntrada(e) {
     }
 }
 
-// Event listeners
+// Event listeners.
 function inicializar() {
     cargarPlantel();
 
-    //Capturamos el formulario y agregamos el listener
+    // Listener para agregar un jugador via formulario.
     const form = document.querySelector('form');
     form.addEventListener('submit', enviarFormulario);
 
-    //evento para asi poder eliminar jugadores con un click
+    // Listener para eliminar un jugador via click en el boton.
     const tbody = jugadores.querySelector('tbody');
     tbody.addEventListener('click', eliminarEntrada);
 }
 
+// Se ejecuta la funcion inicializar una vez se haya cargado el DOM.
 document.addEventListener('DOMContentLoaded', inicializar);

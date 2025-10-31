@@ -2,7 +2,7 @@ body {
     margin: 0;
     padding: 0;
     display: flex;
-    justify-content: center; /* Centra horizontalmente */
+    justify-content: center;
     min-height: 100vh;
     background-color: #10412c;
     font-family: Arial, Helvetica, sans-serif;
@@ -10,8 +10,8 @@ body {
 
 .grid-container {
     display: grid;
-    grid-template-columns: 1fr; /* Una sola columna que ocupa todo el ancho */
-    grid-template-rows: auto 1fr auto; /* Header (auto), contenido (flexible), footer (auto) */
+    grid-template-columns: 1fr;
+    grid-template-rows: auto 1fr auto;
     grid-template-areas:
         "header"
         "content"
@@ -19,50 +19,47 @@ body {
     background-color: #f9f9f9;
     min-height: 100vh;
     min-width: 800px; 
-    width: max-content; /* ← Se ajusta al contenido más ancho */
+    width: max-content;
 }
 
-.grid-item {
-    background-color: #204c52;
-    padding: 15px;
-}
-
-
+/* TITULO DE LA PAGINA */
 .header {
     grid-area: header;
     background-color: #00612d;
     color: white;
     display: flex;
-    justify-content: center;     /* centra el bloque completo */
+    justify-content: center;
     align-items: center;
     gap: 16px;   
     padding: 15px 20px;
 }
 
+/* IMAGEN (LOGO) */
 .header-logo {
-    position: static;            /* por si estaba absolute */
+    position: static;
     height: 72px;
     width: auto;
     margin: 0;
 }
 
+/* SECCION CONTENT */
 .content {
     grid-area: content;
-    background-color: #e5e5e5;
+    background-color: white;
     display: flex;
-    justify-content: center; /* Centra horizontalmente */
-    align-items: flex-start; /* Alinea arriba (en lugar de center) */
+    justify-content: center;
+    align-items: flex-start;
     padding: 0;
 }
 
-/* Estilos de la tabla */
+/* TABLA DE JUGADORES */
 #tabla-jugadores {
     border-collapse: collapse;
-    width: auto; /* Se ajusta a su contenido */
+    width: auto;
     border: 2px solid #828282; 
 }
 
-/* Centrar texto en celdas del encabezado */
+/* TABLA - ENCABEZADOS */
 #tabla-jugadores thead th {
     text-align: center;
     padding: 12px;
@@ -72,27 +69,27 @@ body {
     font-weight: bold;
 }
 
-/* Centrar texto en celdas del cuerpo */
+/* TABLA - CELDAS */
 #tabla-jugadores tbody td {
     text-align: center;
     padding: 10px;
     border: 2px solid #828282;
 }
 
-/* Filas alternadas (zebra) en el cuerpo de la tabla */
+/* TABLA - COLORES DE FILAS ALTERNADO */
 #tabla-jugadores tbody tr:nth-child(odd) {
-  background-color: #d4d4d4; /* impar */
+  background-color: #d4d4d4;
 }
 #tabla-jugadores tbody tr:nth-child(even) {
-  background-color: #e4e4e4; /* par */
+  background-color: #e4e4e4;
 }
 
-/* Pintar header de boton eliminar de gris */
+/* TABLA - COLUMNA ELIMINAR (HEADER) */
 #tabla-jugadores thead th.columna-eliminar{
     background-color: #828282;
 }
 
-/* Columna de 'Eliminar' (última columna) */
+/* TABLA - COLUMNA ELIMINAR (CELDAS) */
 #tabla-jugadores tbody td.celda-eliminar {
   background-color: #828282;   
   text-align: center;
@@ -100,24 +97,23 @@ body {
   width: 90px;                
 }
 
+/* FOOTER */
 .footer {
     grid-area: footer;
     background-color: #018001;
     padding: 0;
-    /* Centrar el formulario horizontalmente */
     display: flex;
     flex-direction: column;
-    align-items: center; /* Centra horizontalmente */
-    justify-content: center; /* Centra verticalmente (opcional) */
+    align-items: center;
+    justify-content: center;
 }
 
-/* Título del formulario centrado */
+/* FOOTER - TÍTULO */
 .form-titulo {
     display: block;
     background: #00612d;
     width: 878px;
     text-align: center;
-    
     font-size: 1.5em;
     font-weight: bold;
     margin-bottom: 20px;
@@ -125,29 +121,29 @@ body {
     padding: 12px 16px;
 }
 
-/* El formulario dentro del footer */
+/* FOOTER - FORMULARIO */
 .footer form {
-    text-align: left; /* Texto alineado a la izquierda */
+    text-align: left;
     color: white;
-    max-width: 500px; /* Ancho máximo del formulario (ajusta según necesites) */
-    width: 100%; /* Ocupa el ancho disponible hasta max-width */
+    max-width: 500px;
+    width: 100%;
     border: 2px solid #828282;
     padding: 20px;
     background-color: #00612d;
     margin-bottom: 24px;
 }
 
-/* Espaciado entre cada input/select */
+/* FOOTER - INPUTS Y SELECTS */
 .footer form input,
 .footer form select {
-    margin-bottom: 15px; /* Espacio debajo de cada campo */
-    padding: 8px; /* Espacio interno del campo */
-    width: 100%; /* Opcional: que ocupen todo el ancho */
-    box-sizing: border-box; /* Incluye padding en el ancho total */
+    margin-bottom: 15px;
+    padding: 8px;
+    width: 100%;
+    box-sizing: border-box;
 }
 
-/* Espaciado para el botón */
+/* FOOTER - BOTÓN */
 .footer form button {
-    margin-top: 10px; /* Espacio extra antes del botón */
+    margin-top: 10px;
     padding: 10px 20px;
 }

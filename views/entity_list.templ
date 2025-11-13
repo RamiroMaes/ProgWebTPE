@@ -1,10 +1,11 @@
 package views
 
 import (
+    "strconv"
     db "ejemplo.com/mi-proyecto-go/db/sqlc"
 )
 
-templ EntityList(jugadores []db.ListJugadoresRow){
+templ EntityList(jugadores []db.Jugador){
     <table id="tabla-jugadores">
         <thead>
             <tr>
@@ -19,18 +20,18 @@ templ EntityList(jugadores []db.ListJugadoresRow){
         </thead>
         <tbody>
             for _, j := range jugadores {
-                <tr data-id={ strconv.Itoa(int(j.IDJugador)) }>
-                    <td>{ j.Posicion }</td>
-                    <td>{ j.IDJugador }</td>
-                    <td>{ j.Nombre }</td>
-                    <td>{ j.PaisNombre }</td>
-                    <td>{ j.FechaNacimiento.Format("2006-01-02") }</td>
-                    <td>{ j.Altura }</td>
-                    <td class="columna-eliminar">
-                        <button class="eliminar" type="button">Eliminar</button>
-                    </td>
-                </tr>
-            }
+				<tr data-id={ strconv.Itoa(int(j.IDJugador)) }>
+					<td>{ j.Posicion }</td>
+					<td>{ strconv.Itoa(int(j.IDJugador)) }</td>
+					<td>{ j.Nombre }</td>
+					<td>{ j.PaisNombre }</td>
+					<td>{ j.FechaNacimiento.Format("2006-01-02") }</td>
+					<td>{ strconv.Itoa(int(j.Altura)) }</td>
+					<td class="columna-eliminar">
+						<button class="eliminar" type="button">Eliminar</button>
+					</td>
+				</tr>
+			}
         </tbody>
     </table>
 }

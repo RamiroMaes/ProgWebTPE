@@ -27,7 +27,7 @@ func (h *JugadoresHandler) ServeHTTP(w http.ResponseWriter,
 
 
 func (h *JugadoresHandler) ListJugadores(w http.ResponseWriter, r *http.Request) {
-	jugadores, err := h.queries.ListJugadores(r.Context())
+	jugadores, err := h.queries.ListPlantel(r.Context())
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return

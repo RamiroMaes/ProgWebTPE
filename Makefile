@@ -42,7 +42,7 @@ setup: db-schema
 # Test: DB + server bg + BASH + stop
 test: setup
 	@echo "→ Arrancando server en background..."
-	@go run ./cmd/server > .server.log 2>&1 & echo $$! > .server.pid # (Basado en fuente 6)
+	@go run ./cmd/server > .server.log & echo $$! > .server.pid
 	@echo "→ Esperando HTTP en :$(HTTP_PORT)..."
 	@for i in $$(seq 1 40); do curl -s http://localhost:$(HTTP_PORT)/ >/dev/null 2>&1 && break; \
 	sleep 1; done # (Basado en fuente 6, 7)

@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"log"
 	"net/http"
-
+	db "ejemplo.com/mi-proyecto-go/db/sqlc"
 	h "ejemplo.com/mi-proyecto-go/pkg/handlers"
 	_ "github.com/lib/pq"
 )
@@ -55,6 +55,7 @@ func StartServer(connStr string, addr string) error {
 	// mux.HandleFunc("GET /jugadores/{id}/lesiones", h.ListLesionesForJugadorHandler(dbConn))
 	// mux.HandleFunc("POST /jugadores/{id}/lesiones", h.CreateTieneHandler(dbConn))
 
+	/*
 	// --- ARCHIVOS ESTÁTICOS ---
 	// Servir index.html en la raíz exacta
 	mux.HandleFunc("GET /{$}", func(w http.ResponseWriter, r *http.Request) {
@@ -69,6 +70,15 @@ func StartServer(connStr string, addr string) error {
 		file := r.PathValue("file")
 		http.ServeFile(w, r, "./"+file)
 	})
+	*/
+
+    mux.Handle("GET /img/", http.StripPrefix("/img/", http.FileServer(http.Dir("./img"))))
+
+	q := db.New(dbConn)
+    JugadorHandler := h.NewJugadoresHandler(q)
+
+
+	mux.Handle("GET /", JugadorHandler)
 
 	// Inicia el servidor
 	log.Printf("Servidor escuchando en %s\n", addr)

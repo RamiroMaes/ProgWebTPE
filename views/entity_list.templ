@@ -1,0 +1,36 @@
+package views
+
+import (
+    db "ejemplo.com/mi-proyecto-go/db/sqlc"
+)
+
+templ EntityList(jugadores []db.ListJugadoresRow){
+    <table id="tabla-jugadores">
+        <thead>
+            <tr>
+                <th>Posición</th>
+                <th>Número</th>
+                <th>Nombre</th>
+                <th>País</th>
+                <th>Fecha de Nacimiento</th>
+                <th>Altura (cm)</th>
+                <th class="columna-eliminar"></th>
+            </tr>
+        </thead>
+        <tbody>
+            for _, j := range jugadores {
+                <tr data-id={ strconv.Itoa(int(j.IDJugador)) }>
+                    <td>{ j.Posicion }</td>
+                    <td>{ j.IDJugador }</td>
+                    <td>{ j.Nombre }</td>
+                    <td>{ j.PaisNombre }</td>
+                    <td>{ j.FechaNacimiento.Format("2006-01-02") }</td>
+                    <td>{ j.Altura }</td>
+                    <td class="columna-eliminar">
+                        <button class="eliminar" type="button">Eliminar</button>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}

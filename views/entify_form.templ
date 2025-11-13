@@ -1,0 +1,28 @@
+package views
+
+
+templ EntityForm (){
+    <form>
+        Posición (seleccione una):
+        <select id="posicion" name="agregarPosicion">
+            <option value="Arquero">Arquero</option>
+            <option value="Defensor">Defensor</option>
+            <option value="Mediocampista">Mediocampista</option>
+            <option value="Delantero">Delantero</option>
+        </select><br/>
+        
+            Número:
+            <input id="numero" type="number" name="agregarNumero" required/><br/>
+            Nombre completo:
+            <input id="nombre" type="text" name="agregarNombre" required/><br/>
+            Pais:
+            <input id="pais" type="text" name="agregarPais" required/><br/>
+            Fecha de nacimiento:
+            <input id="fecha_nacimiento" type="date" name="agregarFechaNacimiento" required/><br/>
+            Altura (cm):
+            <input id="altura" type="number" name="agregarAltura" required/><br/>
+        
+        
+        <button type="submit">Enviar</button>
+    </form>
+}

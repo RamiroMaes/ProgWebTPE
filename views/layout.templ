@@ -1,0 +1,30 @@
+package views
+
+templ Layout(entity_list templ.Component, entity_form templ.Component) {
+    <!DOCTYPE html>
+    <html lang="es">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>River Plate</title>
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@picocss/pico@1/css/pico.min.css">
+    </head>
+    <body>
+
+        <div class="grid-container">
+            <header class="grid-item header">
+                <img src="/img/logo.png" alt="Logo River Plate" class="header-logo">
+                <h1>Plantel profesional River Plate 2025</h1>
+            </header>
+            <main class="grid-item content">
+                @entity_list
+            </main>
+            
+            <footer class="grid-item footer">
+                <div class="form-titulo">Agregar jugador</div>
+                @entity_form
+            </footer>
+        </div>
+    </body>
+    </html>
+}

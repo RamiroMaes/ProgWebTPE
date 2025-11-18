@@ -1,4 +1,4 @@
 - Corregir handlers de JSON en jugadores y en paises y adaptar el bash de acuerdo a eso.
-- Adaptar el css al nuevo templ.
+- Adaptar el css al nuevo templ. HECHO
 - Agregar funcionalidad de ordenamiento en las columnas de la tabla.
 - Borrar todos los archivos que no se usan más.

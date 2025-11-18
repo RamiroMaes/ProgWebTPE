@@ -1,0 +1,149 @@
+body {
+    margin: 0;
+    padding: 0;
+    display: flex;
+    justify-content: center;
+    min-height: 100vh;
+    background-color: #10412c;
+    font-family: Arial, Helvetica, sans-serif;
+}
+
+.grid-container {
+    display: grid;
+    grid-template-columns: 1fr;
+    grid-template-rows: auto 1fr auto;
+    grid-template-areas:
+        "header"
+        "content"
+        "footer";
+    background-color: #f9f9f9;
+    min-height: 100vh;
+    min-width: 800px; 
+    width: max-content;
+}
+
+/* TITULO DE LA PAGINA */
+.header {
+    grid-area: header;
+    background-color: #00612d;
+    color: white;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 16px;   
+    padding: 15px 20px;
+}
+
+/* IMAGEN (LOGO) */
+.header-logo {
+    position: static;
+    height: 72px;
+    width: auto;
+    margin: 0;
+}
+
+/* SECCION CONTENT */
+.content {
+    grid-area: content;
+    background-color: white;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    padding: 0;
+}
+
+/* TABLA DE JUGADORES */
+#tabla-jugadores {
+    border-collapse: collapse;
+    width: auto;
+    border: 2px solid #828282; 
+}
+
+/* TABLA - ENCABEZADOS */
+#tabla-jugadores thead th {
+    text-align: center;
+    padding: 12px;
+    border: 2px solid #828282;
+    color: white;
+    background-color: #000000;
+    font-weight: bold;
+}
+
+/* TABLA - CELDAS */
+#tabla-jugadores tbody td {
+    text-align: center;
+    padding: 10px;
+    border: 2px solid #828282;
+}
+
+/* TABLA - COLORES DE FILAS ALTERNADO */
+#tabla-jugadores tbody tr:nth-child(odd) {
+  background-color: #d4d4d4;
+}
+#tabla-jugadores tbody tr:nth-child(even) {
+  background-color: #e4e4e4;
+}
+
+/* TABLA - COLUMNA ELIMINAR (HEADER) */
+#tabla-jugadores thead th.columna-eliminar{
+    background-color: #828282;
+}
+
+/* TABLA - COLUMNA ELIMINAR (CELDAS) */
+#tabla-jugadores tbody td.celda-eliminar {
+  background-color: #828282;   
+  text-align: center;
+  white-space: nowrap;
+  width: 90px;                
+}
+
+/* FOOTER */
+.footer {
+    grid-area: footer;
+    background-color: #018001;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+/* FOOTER - TÍTULO */
+.form-titulo {
+    display: block;
+    background: #00612d;
+    width: 878px;
+    text-align: center;
+    font-size: 1.5em;
+    font-weight: bold;
+    margin-bottom: 20px;
+    color: white;
+    padding: 12px 16px;
+}
+
+/* FOOTER - FORMULARIO */
+.footer form {
+    text-align: left;
+    color: white;
+    max-width: 500px;
+    width: 100%;
+    border: 2px solid #828282;
+    padding: 20px;
+    background-color: #00612d;
+    margin-bottom: 24px;
+}
+
+/* FOOTER - INPUTS Y SELECTS */
+.footer form input,
+.footer form select {
+    margin-bottom: 15px;
+    padding: 8px;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+/* FOOTER - BOTÓN */
+.footer form button {
+    margin-top: 10px;
+    padding: 10px 20px;
+}

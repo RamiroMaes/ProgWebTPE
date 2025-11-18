@@ -14,7 +14,7 @@ templ EntityRow(j db.Jugador){
         <td>{ j.PaisNombre }</td>
         <td>{ j.FechaNacimiento.Format("2006-01-02") }</td>
         <td>{ strconv.Itoa(int(j.Altura)) }</td>
-        <td class="columna-eliminar">
+        <td class="celda-eliminar">
             <button
                 class="eliminar"
                 type="button"

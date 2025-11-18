@@ -29,7 +29,7 @@ func StartServer(connStr string, addr string) error {
 	mux.HandleFunc("POST /paises", h.CreatePaisHandler(dbConn))
 	mux.HandleFunc("DELETE /paises/{nombre}", h.DeletePaisHandler(dbConn))
 
-    mux.Handle("GET /img/", http.StripPrefix("/img/", http.FileServer(http.Dir("./img"))))
+	mux.Handle("GET /static/", http.StripPrefix("/static/", http.FileServer(http.Dir("./static"))))
 
 	q := db.New(dbConn)
 

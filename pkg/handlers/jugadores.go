@@ -119,6 +119,7 @@ func ListJugadoresHandler(dbConn *sql.DB) http.HandlerFunc {
 	}
 }
 
+
 // GET /plantel
 func ListPlantelHandler(dbConn *sql.DB) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
@@ -163,6 +164,7 @@ func GetJugadorHandler(dbConn *sql.DB) http.HandlerFunc {
 	}
 }
 
+
 // PUT /jugadores/{id}
 func UpdateJugadorHandler(dbConn *sql.DB) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
@@ -198,6 +200,7 @@ func UpdateJugadorHandler(dbConn *sql.DB) http.HandlerFunc {
 		json.NewEncoder(w).Encode(updated)
 	}
 }
+
 
 // DELETE /jugadores/{id}
 func DeleteJugadorHandler(dbConn *sql.DB) http.HandlerFunc {

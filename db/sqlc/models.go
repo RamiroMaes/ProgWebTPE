@@ -8,11 +8,6 @@ import (
 	"time"
 )
 
-type Club struct {
-	Nombre string `json:"nombre"`
-	Ciudad string `json:"ciudad"`
-}
-
 type Jugador struct {
 	Nombre          string    `json:"nombre"`
 	IDJugador       int32     `json:"id_jugador"`
@@ -22,26 +17,6 @@ type Jugador struct {
 	PaisNombre      string    `json:"pais_nombre"`
 }
 
-type Jugo struct {
-	FechaInicio      time.Time `json:"fecha_inicio"`
-	FechaFin         time.Time `json:"fecha_fin"`
-	JugadorIDJugador int32     `json:"jugador_id_jugador"`
-	ClubNombre       string    `json:"club_nombre"`
-	ClubCiudad       string    `json:"club_ciudad"`
-}
-
-type Lesion struct {
-	TipoLesion  string `json:"tipo_lesion"`
-	Descripcion string `json:"descripcion"`
-}
-
 type Pais struct {
 	Nombre string `json:"nombre"`
-}
-
-type Tiene struct {
-	FechaInicio      time.Time `json:"fecha_inicio"`
-	FechaFin         time.Time `json:"fecha_fin"`
-	JugadorIDJugador int32     `json:"jugador_id_jugador"`
-	LesionTipoLesion string    `json:"lesion_tipo_lesion"`
 }

@@ -10,26 +10,7 @@ import (
 	"time"
 )
 
-const createClub = `-- name: CreateClub :one
-INSERT INTO Club (Nombre, Ciudad)
-VALUES ($1, $2)
-RETURNING Nombre, Ciudad
-`
-
-type CreateClubParams struct {
-	Nombre string `json:"nombre"`
-	Ciudad string `json:"ciudad"`
-}
-
-func (q *Queries) CreateClub(ctx context.Context, arg CreateClubParams) (Club, error) {
-	row := q.db.QueryRowContext(ctx, createClub, arg.Nombre, arg.Ciudad)
-	var i Club
-	err := row.Scan(&i.Nombre, &i.Ciudad)
-	return i, err
-}
-
 const createJugador = `-- name: CreateJugador :one
-
 INSERT INTO Jugador (Nombre, iD_Jugador, Posicion,Fecha_Nacimiento, Altura, Pais_Nombre)
 VALUES ($1, $2, $3, $4, $5, $6)
 RETURNING Nombre, iD_Jugador, Posicion,Fecha_Nacimiento, Altura, Pais_Nombre
@@ -44,7 +25,6 @@ type CreateJugadorParams struct {
 	PaisNombre      string    `json:"pais_nombre"`
 }
 
-// Una consulta para crear un nuevo registro (Create...) usando el csv "plantelRiverPlate.csv"
 func (q *Queries) CreateJugador(ctx context.Context, arg CreateJugadorParams) (Jugador, error) {
 	row := q.db.QueryRowContext(ctx, createJugador,
 		arg.Nombre,
@@ -66,57 +46,6 @@ func (q *Queries) CreateJugador(ctx context.Context, arg CreateJugadorParams) (J
 	return i, err
 }
 
-const createJugo = `-- name: CreateJugo :one
-INSERT INTO Jugo (fecha_inicio, fecha_fin, Jugador_iD_Jugador, Club_Nombre, Club_Ciudad)
-VALUES ($1, $2, $3, $4, $5)
-RETURNING fecha_inicio, fecha_fin, jugador_id_jugador, club_nombre, club_ciudad
-`
-
-type CreateJugoParams struct {
-	FechaInicio      time.Time `json:"fecha_inicio"`
-	FechaFin         time.Time `json:"fecha_fin"`
-	JugadorIDJugador int32     `json:"jugador_id_jugador"`
-	ClubNombre       string    `json:"club_nombre"`
-	ClubCiudad       string    `json:"club_ciudad"`
-}
-
-func (q *Queries) CreateJugo(ctx context.Context, arg CreateJugoParams) (Jugo, error) {
-	row := q.db.QueryRowContext(ctx, createJugo,
-		arg.FechaInicio,
-		arg.FechaFin,
-		arg.JugadorIDJugador,
-		arg.ClubNombre,
-		arg.ClubCiudad,
-	)
-	var i Jugo
-	err := row.Scan(
-		&i.FechaInicio,
-		&i.FechaFin,
-		&i.JugadorIDJugador,
-		&i.ClubNombre,
-		&i.ClubCiudad,
-	)
-	return i, err
-}
-
-const createLesion = `-- name: CreateLesion :one
-INSERT INTO Lesion (Tipo_Lesion, Descripcion)
-VALUES ($1, $2)
-RETURNING Tipo_Lesion, Descripcion
-`
-
-type CreateLesionParams struct {
-	TipoLesion  string `json:"tipo_lesion"`
-	Descripcion string `json:"descripcion"`
-}
-
-func (q *Queries) CreateLesion(ctx context.Context, arg CreateLesionParams) (Lesion, error) {
-	row := q.db.QueryRowContext(ctx, createLesion, arg.TipoLesion, arg.Descripcion)
-	var i Lesion
-	err := row.Scan(&i.TipoLesion, &i.Descripcion)
-	return i, err
-}
-
 const createPais = `-- name: CreatePais :one
 INSERT INTO Pais(Nombre)
 VALUES ($1)
@@ -129,85 +58,13 @@ func (q *Queries) CreatePais(ctx context.Context, nombre string) (string, error)
 	return nombre, err
 }
 
-const createTiene = `-- name: CreateTiene :one
-INSERT INTO Tiene (fecha_inicio, fecha_fin, Jugador_iD_Jugador, Lesion_Tipo_Lesion)
-VALUES ($1, $2, $3, $4)
-RETURNING fecha_inicio, fecha_fin, jugador_id_jugador, lesion_tipo_lesion
-`
-
-type CreateTieneParams struct {
-	FechaInicio      time.Time `json:"fecha_inicio"`
-	FechaFin         time.Time `json:"fecha_fin"`
-	JugadorIDJugador int32     `json:"jugador_id_jugador"`
-	LesionTipoLesion string    `json:"lesion_tipo_lesion"`
-}
-
-func (q *Queries) CreateTiene(ctx context.Context, arg CreateTieneParams) (Tiene, error) {
-	row := q.db.QueryRowContext(ctx, createTiene,
-		arg.FechaInicio,
-		arg.FechaFin,
-		arg.JugadorIDJugador,
-		arg.LesionTipoLesion,
-	)
-	var i Tiene
-	err := row.Scan(
-		&i.FechaInicio,
-		&i.FechaFin,
-		&i.JugadorIDJugador,
-		&i.LesionTipoLesion,
-	)
-	return i, err
-}
-
-const deleteClub = `-- name: DeleteClub :exec
-DELETE FROM Club
-WHERE Nombre = $1 AND Ciudad = $2
-`
-
-type DeleteClubParams struct {
-	Nombre string `json:"nombre"`
-	Ciudad string `json:"ciudad"`
-}
-
-func (q *Queries) DeleteClub(ctx context.Context, arg DeleteClubParams) error {
-	_, err := q.db.ExecContext(ctx, deleteClub, arg.Nombre, arg.Ciudad)
-	return err
-}
-
 const deleteJugador = `-- name: DeleteJugador :exec
 DELETE FROM Jugador
 WHERE iD_Jugador = $1
 `
 
-// Una consulta para borrar un registro (Delete...).
 func (q *Queries) DeleteJugador(ctx context.Context, idJugador int32) error {
 	_, err := q.db.ExecContext(ctx, deleteJugador, idJugador)
-	return err
-}
-
-const deleteJugo = `-- name: DeleteJugo :exec
-DELETE FROM Jugo
-WHERE Jugador_iD_Jugador = $1 AND Club_Nombre = $2 AND Club_Ciudad = $3
-`
-
-type DeleteJugoParams struct {
-	JugadorIDJugador int32  `json:"jugador_id_jugador"`
-	ClubNombre       string `json:"club_nombre"`
-	ClubCiudad       string `json:"club_ciudad"`
-}
-
-func (q *Queries) DeleteJugo(ctx context.Context, arg DeleteJugoParams) error {
-	_, err := q.db.ExecContext(ctx, deleteJugo, arg.JugadorIDJugador, arg.ClubNombre, arg.ClubCiudad)
-	return err
-}
-
-const deleteLesion = `-- name: DeleteLesion :exec
-DELETE FROM Lesion
-WHERE Tipo_Lesion = $1
-`
-
-func (q *Queries) DeleteLesion(ctx context.Context, tipoLesion string) error {
-	_, err := q.db.ExecContext(ctx, deleteLesion, tipoLesion)
 	return err
 }
 
@@ -221,45 +78,11 @@ func (q *Queries) DeletePais(ctx context.Context, nombre string) error {
 	return err
 }
 
-const deleteTiene = `-- name: DeleteTiene :exec
-DELETE FROM Tiene
-WHERE Jugador_iD_Jugador = $1 AND Lesion_Tipo_Lesion = $2
-`
-
-type DeleteTieneParams struct {
-	JugadorIDJugador int32  `json:"jugador_id_jugador"`
-	LesionTipoLesion string `json:"lesion_tipo_lesion"`
-}
-
-func (q *Queries) DeleteTiene(ctx context.Context, arg DeleteTieneParams) error {
-	_, err := q.db.ExecContext(ctx, deleteTiene, arg.JugadorIDJugador, arg.LesionTipoLesion)
-	return err
-}
-
-const getClub = `-- name: GetClub :one
-SELECT nombre, ciudad FROM Club
-WHERE Nombre = $1 AND Ciudad = $2
-`
-
-type GetClubParams struct {
-	Nombre string `json:"nombre"`
-	Ciudad string `json:"ciudad"`
-}
-
-func (q *Queries) GetClub(ctx context.Context, arg GetClubParams) (Club, error) {
-	row := q.db.QueryRowContext(ctx, getClub, arg.Nombre, arg.Ciudad)
-	var i Club
-	err := row.Scan(&i.Nombre, &i.Ciudad)
-	return i, err
-}
-
 const getJugador = `-- name: GetJugador :one
-
 SELECT nombre, id_jugador, posicion, fecha_nacimiento, altura, pais_nombre FROM Jugador
 WHERE iD_Jugador = $1
 `
 
-// Una consulta para obtener un registro por su ID (Get...).
 func (q *Queries) GetJugador(ctx context.Context, idJugador int32) (Jugador, error) {
 	row := q.db.QueryRowContext(ctx, getJugador, idJugador)
 	var i Jugador
@@ -274,42 +97,6 @@ func (q *Queries) GetJugador(ctx context.Context, idJugador int32) (Jugador, err
 	return i, err
 }
 
-const getJugo = `-- name: GetJugo :one
-SELECT fecha_inicio, fecha_fin, jugador_id_jugador, club_nombre, club_ciudad FROM Jugo
-WHERE Jugador_iD_Jugador = $1 AND Club_Nombre = $2 AND Club_Ciudad = $3
-`
-
-type GetJugoParams struct {
-	JugadorIDJugador int32  `json:"jugador_id_jugador"`
-	ClubNombre       string `json:"club_nombre"`
-	ClubCiudad       string `json:"club_ciudad"`
-}
-
-func (q *Queries) GetJugo(ctx context.Context, arg GetJugoParams) (Jugo, error) {
-	row := q.db.QueryRowContext(ctx, getJugo, arg.JugadorIDJugador, arg.ClubNombre, arg.ClubCiudad)
-	var i Jugo
-	err := row.Scan(
-		&i.FechaInicio,
-		&i.FechaFin,
-		&i.JugadorIDJugador,
-		&i.ClubNombre,
-		&i.ClubCiudad,
-	)
-	return i, err
-}
-
-const getLesion = `-- name: GetLesion :one
-SELECT tipo_lesion, descripcion FROM Lesion
-WHERE Tipo_Lesion = $1
-`
-
-func (q *Queries) GetLesion(ctx context.Context, tipoLesion string) (Lesion, error) {
-	row := q.db.QueryRowContext(ctx, getLesion, tipoLesion)
-	var i Lesion
-	err := row.Scan(&i.TipoLesion, &i.Descripcion)
-	return i, err
-}
-
 const getPais = `-- name: GetPais :one
 SELECT nombre FROM Pais
 WHERE Nombre = $1
@@ -321,57 +108,7 @@ func (q *Queries) GetPais(ctx context.Context, nombre string) (string, error) {
 	return nombre, err
 }
 
-const getTiene = `-- name: GetTiene :one
-SELECT fecha_inicio, fecha_fin, jugador_id_jugador, lesion_tipo_lesion FROM Tiene
-WHERE Jugador_iD_Jugador = $1 AND Lesion_Tipo_Lesion = $2
-`
-
-type GetTieneParams struct {
-	JugadorIDJugador int32  `json:"jugador_id_jugador"`
-	LesionTipoLesion string `json:"lesion_tipo_lesion"`
-}
-
-func (q *Queries) GetTiene(ctx context.Context, arg GetTieneParams) (Tiene, error) {
-	row := q.db.QueryRowContext(ctx, getTiene, arg.JugadorIDJugador, arg.LesionTipoLesion)
-	var i Tiene
-	err := row.Scan(
-		&i.FechaInicio,
-		&i.FechaFin,
-		&i.JugadorIDJugador,
-		&i.LesionTipoLesion,
-	)
-	return i, err
-}
-
-const listClubs = `-- name: ListClubs :many
-SELECT nombre, ciudad FROM Club
-`
-
-func (q *Queries) ListClubs(ctx context.Context) ([]Club, error) {
-	rows, err := q.db.QueryContext(ctx, listClubs)
-	if err != nil {
-		return nil, err
-	}
-	defer rows.Close()
-	var items []Club
-	for rows.Next() {
-		var i Club
-		if err := rows.Scan(&i.Nombre, &i.Ciudad); err != nil {
-			return nil, err
-		}
-		items = append(items, i)
-	}
-	if err := rows.Close(); err != nil {
-		return nil, err
-	}
-	if err := rows.Err(); err != nil {
-		return nil, err
-	}
-	return items, nil
-}
-
 const listJugadores = `-- name: ListJugadores :many
-
 SELECT iD_Jugador, Nombre FROM Jugador
 `
 
@@ -380,7 +117,6 @@ type ListJugadoresRow struct {
 	Nombre    string `json:"nombre"`
 }
 
-// Una consulta para listar todos los registros (List...).
 func (q *Queries) ListJugadores(ctx context.Context) ([]ListJugadoresRow, error) {
 	rows, err := q.db.QueryContext(ctx, listJugadores)
 	if err != nil {
@@ -391,66 +127,6 @@ func (q *Queries) ListJugadores(ctx context.Context) ([]ListJugadoresRow, error)
 	for rows.Next() {
 		var i ListJugadoresRow
 		if err := rows.Scan(&i.IDJugador, &i.Nombre); err != nil {
-			return nil, err
-		}
-		items = append(items, i)
-	}
-	if err := rows.Close(); err != nil {
-		return nil, err
-	}
-	if err := rows.Err(); err != nil {
-		return nil, err
-	}
-	return items, nil
-}
-
-const listJugos = `-- name: ListJugos :many
-SELECT fecha_inicio, fecha_fin, jugador_id_jugador, club_nombre, club_ciudad FROM Jugo
-`
-
-func (q *Queries) ListJugos(ctx context.Context) ([]Jugo, error) {
-	rows, err := q.db.QueryContext(ctx, listJugos)
-	if err != nil {
-		return nil, err
-	}
-	defer rows.Close()
-	var items []Jugo
-	for rows.Next() {
-		var i Jugo
-		if err := rows.Scan(
-			&i.FechaInicio,
-			&i.FechaFin,
-			&i.JugadorIDJugador,
-			&i.ClubNombre,
-			&i.ClubCiudad,
-		); err != nil {
-			return nil, err
-		}
-		items = append(items, i)
-	}
-	if err := rows.Close(); err != nil {
-		return nil, err
-	}
-	if err := rows.Err(); err != nil {
-		return nil, err
-	}
-	return items, nil
-}
-
-const listLesiones = `-- name: ListLesiones :many
-SELECT tipo_lesion, descripcion FROM Lesion
-`
-
-func (q *Queries) ListLesiones(ctx context.Context) ([]Lesion, error) {
-	rows, err := q.db.QueryContext(ctx, listLesiones)
-	if err != nil {
-		return nil, err
-	}
-	defer rows.Close()
-	var items []Lesion
-	for rows.Next() {
-		var i Lesion
-		if err := rows.Scan(&i.TipoLesion, &i.Descripcion); err != nil {
 			return nil, err
 		}
 		items = append(items, i)
@@ -525,63 +201,7 @@ func (q *Queries) ListPlantel(ctx context.Context) ([]Jugador, error) {
 	return items, nil
 }
 
-const listTienes = `-- name: ListTienes :many
-SELECT fecha_inicio, fecha_fin, jugador_id_jugador, lesion_tipo_lesion FROM Tiene
-`
-
-func (q *Queries) ListTienes(ctx context.Context) ([]Tiene, error) {
-	rows, err := q.db.QueryContext(ctx, listTienes)
-	if err != nil {
-		return nil, err
-	}
-	defer rows.Close()
-	var items []Tiene
-	for rows.Next() {
-		var i Tiene
-		if err := rows.Scan(
-			&i.FechaInicio,
-			&i.FechaFin,
-			&i.JugadorIDJugador,
-			&i.LesionTipoLesion,
-		); err != nil {
-			return nil, err
-		}
-		items = append(items, i)
-	}
-	if err := rows.Close(); err != nil {
-		return nil, err
-	}
-	if err := rows.Err(); err != nil {
-		return nil, err
-	}
-	return items, nil
-}
-
-const updateClub = `-- name: UpdateClub :exec
-UPDATE Club
-SET Nombre = $1, Ciudad = $2
-WHERE Nombre = $3 AND Ciudad = $4
-`
-
-type UpdateClubParams struct {
-	Nombre   string `json:"nombre"`
-	Ciudad   string `json:"ciudad"`
-	Nombre_2 string `json:"nombre_2"`
-	Ciudad_2 string `json:"ciudad_2"`
-}
-
-func (q *Queries) UpdateClub(ctx context.Context, arg UpdateClubParams) error {
-	_, err := q.db.ExecContext(ctx, updateClub,
-		arg.Nombre,
-		arg.Ciudad,
-		arg.Nombre_2,
-		arg.Ciudad_2,
-	)
-	return err
-}
-
 const updateJugador = `-- name: UpdateJugador :exec
-
 UPDATE Jugador
 SET Nombre = $1, Posicion = $2, Fecha_Nacimiento = $3, Altura = $4, Pais_Nombre = $5
 WHERE iD_Jugador = $6
@@ -596,7 +216,6 @@ type UpdateJugadorParams struct {
 	IDJugador       int32     `json:"id_jugador"`
 }
 
-// Una consulta para actualizar un registro (Update...).
 func (q *Queries) UpdateJugador(ctx context.Context, arg UpdateJugadorParams) error {
 	_, err := q.db.ExecContext(ctx, updateJugador,
 		arg.Nombre,
@@ -606,47 +225,6 @@ func (q *Queries) UpdateJugador(ctx context.Context, arg UpdateJugadorParams) er
 		arg.PaisNombre,
 		arg.IDJugador,
 	)
-	return err
-}
-
-const updateJugo = `-- name: UpdateJugo :exec
-UPDATE Jugo
-SET fecha_inicio = $1, fecha_fin = $2
-WHERE Jugador_iD_Jugador = $3 AND Club_Nombre = $4 AND Club_Ciudad = $5
-`
-
-type UpdateJugoParams struct {
-	FechaInicio      time.Time `json:"fecha_inicio"`
-	FechaFin         time.Time `json:"fecha_fin"`
-	JugadorIDJugador int32     `json:"jugador_id_jugador"`
-	ClubNombre       string    `json:"club_nombre"`
-	ClubCiudad       string    `json:"club_ciudad"`
-}
-
-func (q *Queries) UpdateJugo(ctx context.Context, arg UpdateJugoParams) error {
-	_, err := q.db.ExecContext(ctx, updateJugo,
-		arg.FechaInicio,
-		arg.FechaFin,
-		arg.JugadorIDJugador,
-		arg.ClubNombre,
-		arg.ClubCiudad,
-	)
-	return err
-}
-
-const updateLesion = `-- name: UpdateLesion :exec
-UPDATE Lesion
-SET Descripcion = $1
-WHERE Tipo_Lesion = $2
-`
-
-type UpdateLesionParams struct {
-	Descripcion string `json:"descripcion"`
-	TipoLesion  string `json:"tipo_lesion"`
-}
-
-func (q *Queries) UpdateLesion(ctx context.Context, arg UpdateLesionParams) error {
-	_, err := q.db.ExecContext(ctx, updateLesion, arg.Descripcion, arg.TipoLesion)
 	return err
 }
 
@@ -663,28 +241,5 @@ type UpdatePaisParams struct {
 
 func (q *Queries) UpdatePais(ctx context.Context, arg UpdatePaisParams) error {
 	_, err := q.db.ExecContext(ctx, updatePais, arg.Nombre, arg.Nombre_2)
-	return err
-}
-
-const updateTiene = `-- name: UpdateTiene :exec
-UPDATE Tiene
-SET fecha_inicio = $1, fecha_fin = $2
-WHERE Jugador_iD_Jugador = $3 AND Lesion_Tipo_Lesion = $4
-`
-
-type UpdateTieneParams struct {
-	FechaInicio      time.Time `json:"fecha_inicio"`
-	FechaFin         time.Time `json:"fecha_fin"`
-	JugadorIDJugador int32     `json:"jugador_id_jugador"`
-	LesionTipoLesion string    `json:"lesion_tipo_lesion"`
-}
-
-func (q *Queries) UpdateTiene(ctx context.Context, arg UpdateTieneParams) error {
-	_, err := q.db.ExecContext(ctx, updateTiene,
-		arg.FechaInicio,
-		arg.FechaFin,
-		arg.JugadorIDJugador,
-		arg.LesionTipoLesion,
-	)
 	return err
 }

@@ -9,57 +9,100 @@ import (
 	"strconv"
 	"strings"
 	"time"
-
+	"ejemplo.com/mi-proyecto-go/views"
 	db "ejemplo.com/mi-proyecto-go/db/sqlc"
+	"github.com/lib/pq"
 )
 
 // POST /jugadores
 func CreateJugadorHandler(dbConn *sql.DB) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		var p db.CreateJugadorParams
-		if err := json.NewDecoder(r.Body).Decode(&p); err != nil {
-			http.Error(w, "invalid json body: "+err.Error(), http.StatusBadRequest)
+		if err := r.ParseForm(); err != nil {
+			http.Error(w, "Error al parsear el formulario: "+err.Error(), http.StatusBadRequest)
 			return
 		}
+
+		nombre := r.FormValue("agregarNombre")
+		posicion := r.FormValue("agregarPosicion")
+		paisNombre := r.FormValue("agregarPais")
+		idJugador, errID := strconv.Atoi(r.FormValue("agregarNumero"))
+		altura, errAltura := strconv.Atoi(r.FormValue("agregarAltura"))
 		
+        // Para la fecha, el formato de un input type="date" es "YYYY-MM-DD"
+		fechaNacimiento, errFecha := time.Parse("2006-01-02", r.FormValue("agregarFechaNacimiento"))
+		if errID != nil || errAltura != nil || errFecha != nil {
+			http.Error(w, "Error en la conversion de la fecha de nacimiento.", http.StatusBadRequest)
+			return
+		}
+
+		params := db.CreateJugadorParams{
+			Nombre:         nombre,
+			IDJugador:      int32(idJugador),
+			Posicion:       posicion,
+			FechaNacimiento: fechaNacimiento,
+			Altura:         int32(altura),
+			PaisNombre:     paisNombre,
+		}
+
 		// Validación de que todos los campos obligatorios estén presentes
-		if strings.TrimSpace(p.Nombre) == "" {
+		if strings.TrimSpace(params.Nombre) == "" {
 			http.Error(w, "nombre es obligatorio", http.StatusBadRequest)
 			return
 		}
-		if p.Altura <= 0 {
+		if params.Altura <= 0 {
 			http.Error(w, "altura es obligatorio y debe ser > 0", http.StatusBadRequest)
 			return
 		}
-		if strings.TrimSpace(p.Posicion) == "" {
+		if strings.TrimSpace(params.Posicion) == "" {
 			http.Error(w, "posición es obligatorio", http.StatusBadRequest)
 			return
 		}
-		if strings.TrimSpace(p.PaisNombre) == "" {
+		if strings.TrimSpace(params.PaisNombre) == "" {
 			http.Error(w, "pais_nombre es obligatorio", http.StatusBadRequest)
 			return
 		}
-		if time.Time(p.FechaNacimiento).IsZero() {
+		if time.Time(params.FechaNacimiento).IsZero() {
 			http.Error(w, "fecha_nacimiento es obligatorio", http.StatusBadRequest)
 			return
 		}
-		if p.IDJugador <= 0 {
+		if params.IDJugador <= 0 {
 			http.Error(w, "id_jugador debe ser > 0", http.StatusBadRequest)
 			return
 		}
-		
-		// Lógica de DB
+
+		// El código de error estándar de PostgreSQL para una violación de unicidad es 23505.
+		// El código de error de PostgreSQL para una violación de clave foránea es 23503.
+
 		queries := db.New(dbConn)
-		created, err := queries.CreateJugador(context.Background(), p)
+		createdJugador, err := queries.CreateJugador(r.Context(), params)
 		if err != nil {
-			http.Error(w, "db error: "+err.Error(), http.StatusInternalServerError)
-			return
+			if pqErr, ok := err.(*pq.Error); ok {
+                switch pqErr.Code {
+                case "23505":
+                    http.Error(w, "Error: Ya existe un jugador con ese número.", http.StatusConflict)
+                case "23503":
+                    if pqErr.Constraint == "jugador_pais" { // Se verifica que el conflicto sea con la tabla de paises y no con otra.
+                        http.Error(w, "Error: El país ingresado no es válido.", http.StatusBadRequest)
+                    } else {
+                        // Para otras violaciones de FK que no sean la de tabla país (en caso de futuras ampliaciones de la bdd).
+                        http.Error(w, "Error de datos: "+pqErr.Message, http.StatusBadRequest)
+                    }
+                default:
+                    // Para otros errores de base de datos no capturados específicamente
+                    http.Error(w, "Error de base de datos: "+pqErr.Message, http.StatusInternalServerError)
+                }
+			} else {
+                // Si el error no es de tipo *pq.Error
+				http.Error(w, "Error interno al crear el jugador: "+err.Error(), http.StatusInternalServerError)
+			}
+			return // No continuamos.
 		}
-		w.Header().Set("Content-Type", "application/json")
-		w.WriteHeader(http.StatusCreated)
-		json.NewEncoder(w).Encode(created)
+		w.Header().Set("Content-Type", "text/html")
+		views.EntityRow(createdJugador).Render(r.Context(), w)
 	}
+
 }
+
 
 // GET /jugadores
 func ListJugadoresHandler(dbConn *sql.DB) http.HandlerFunc {

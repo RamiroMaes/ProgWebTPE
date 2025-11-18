@@ -24,14 +24,6 @@ func StartServer(connStr string, addr string) error {
 	// Usamos el mux estándar de Go 1.22+
 	mux := http.NewServeMux()
 
-	// --- JUGADORES ---
-	mux.HandleFunc("GET /jugadores", h.ListJugadoresHandler(dbConn))
-	mux.HandleFunc("GET /plantel", h.ListPlantelHandler(dbConn))
-	mux.HandleFunc("POST /jugadores", h.CreateJugadorHandler(dbConn))
-	mux.HandleFunc("GET /jugadores/{id}", h.GetJugadorHandler(dbConn))
-	mux.HandleFunc("PUT /jugadores/{id}", h.UpdateJugadorHandler(dbConn))
-	mux.HandleFunc("DELETE /jugadores/{id}", h.DeleteJugadorHandler(dbConn))
-
 	// --- CLUBS ---
 	mux.HandleFunc("GET /clubs", h.ListClubsHandler(dbConn))
 	mux.HandleFunc("POST /clubs", h.CreateClubHandler(dbConn))
@@ -75,10 +67,17 @@ func StartServer(connStr string, addr string) error {
     mux.Handle("GET /img/", http.StripPrefix("/img/", http.FileServer(http.Dir("./img"))))
 
 	q := db.New(dbConn)
-    JugadorHandler := h.NewJugadoresHandler(q)
 
+	// --- JUGADORES ---
+	mux.HandleFunc("GET /", h.ListJugadoresPage(q))
+	mux.HandleFunc("POST /jugadores", h.CreateJugadorHandler(dbConn))
 
-	mux.Handle("GET /", JugadorHandler)
+	mux.HandleFunc("GET /jugadores", h.ListJugadoresHandler(dbConn))
+	mux.HandleFunc("GET /plantel", h.ListPlantelHandler(dbConn))
+	
+	mux.HandleFunc("GET /jugadores/{id}", h.GetJugadorHandler(dbConn))
+	mux.HandleFunc("PUT /jugadores/{id}", h.UpdateJugadorHandler(dbConn))
+	mux.HandleFunc("DELETE /jugadores/{id}", h.DeleteJugadorHandler(dbConn))
 
 	// Inicia el servidor
 	log.Printf("Servidor escuchando en %s\n", addr)

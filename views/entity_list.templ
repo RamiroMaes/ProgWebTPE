@@ -2,8 +2,33 @@ package views
 
 import (
     "strconv"
+    "fmt"
     db "ejemplo.com/mi-proyecto-go/db/sqlc"
 )
+
+templ EntityRow(j db.Jugador){
+    <tr id={ fmt.Sprintf("jugador-row-%d", j.IDJugador) }>
+        <td>{ j.Posicion }</td>
+        <td>{ strconv.Itoa(int(j.IDJugador)) }</td>
+        <td>{ j.Nombre }</td>
+        <td>{ j.PaisNombre }</td>
+        <td>{ j.FechaNacimiento.Format("2006-01-02") }</td>
+        <td>{ strconv.Itoa(int(j.Altura)) }</td>
+        <td class="columna-eliminar">
+            <button
+                class="eliminar"
+                type="button"
+                hx-delete={ fmt.Sprintf("/jugadores/%d", j.IDJugador) }
+                hx-confirm={ fmt.Sprintf("¿Estás seguro de eliminar a %s?", j.Nombre) }
+                hx-target="closest tr"
+                hx-swap="none"
+                hx-on:htmx:after-request="if (event.detail.successful) this.closest('tr').remove()"
+                >
+                Eliminar
+                </button>
+        </td>
+    </tr>
+}
 
 templ EntityList(jugadores []db.Jugador){
     <table id="tabla-jugadores">
@@ -18,19 +43,9 @@ templ EntityList(jugadores []db.Jugador){
                 <th class="columna-eliminar"></th>
             </tr>
         </thead>
-        <tbody>
+        <tbody id="tabla-jugadores-tbody">
             for _, j := range jugadores {
-				<tr data-id={ strconv.Itoa(int(j.IDJugador)) }>
-					<td>{ j.Posicion }</td>
-					<td>{ strconv.Itoa(int(j.IDJugador)) }</td>
-					<td>{ j.Nombre }</td>
-					<td>{ j.PaisNombre }</td>
-					<td>{ j.FechaNacimiento.Format("2006-01-02") }</td>
-					<td>{ strconv.Itoa(int(j.Altura)) }</td>
-					<td class="columna-eliminar">
-						<button class="eliminar" type="button">Eliminar</button>
-					</td>
-				</tr>
+                @EntityRow(j)
 			}
         </tbody>
     </table>

@@ -2,7 +2,13 @@ package views
 
 
 templ EntityForm (){
-    <form>
+    <form
+        hx-post="/jugadores"
+        hx-target="#tabla-jugadores-tbody"
+        hx-swap="beforeend"
+        hx-on:htmx:response-error="alert(event.detail.xhr.responseText)"
+        hx-on:htmx:after-request="if(event.detail.successful) this.reset()"
+    >
         Posición (seleccione una):
         <select id="posicion" name="agregarPosicion">
             <option value="Arquero">Arquero</option>

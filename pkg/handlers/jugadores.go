@@ -3,12 +3,12 @@ package handlers
 import (
 	"context"
 	"database/sql"
-	"encoding/json"
 	"errors"
 	"net/http"
 	"strconv"
 	"strings"
 	"time"
+	"fmt"
 	"ejemplo.com/mi-proyecto-go/views"
 	db "ejemplo.com/mi-proyecto-go/db/sqlc"
 	"github.com/lib/pq"
@@ -113,9 +113,11 @@ func ListJugadoresHandler(dbConn *sql.DB) http.HandlerFunc {
 			http.Error(w, "db error: "+err.Error(), http.StatusInternalServerError)
 			return
 		}
-		w.Header().Set("Content-Type", "application/json")
+		w.Header().Set("Content-Type", "text/plain; charset=utf-8")
 		w.WriteHeader(http.StatusOK)
-		json.NewEncoder(w).Encode(all)
+		for _, jugador := range all {
+            fmt.Fprintf(w, "%v, ", jugador) // %v imprime el struct
+        }
 	}
 }
 
@@ -129,9 +131,11 @@ func ListPlantelHandler(dbConn *sql.DB) http.HandlerFunc {
 			http.Error(w, "db error: "+err.Error(), http.StatusInternalServerError)
 			return
 		}
-		w.Header().Set("Content-Type", "application/json")
+		w.Header().Set("Content-Type", "text/plain; charset=utf-8")
 		w.WriteHeader(http.StatusOK)
-		json.NewEncoder(w).Encode(all)
+		for _, jugador := range all {
+            fmt.Fprintf(w, "%v, ", jugador) // %v imprime el struct
+        }
 	}
 }
 
@@ -158,47 +162,70 @@ func GetJugadorHandler(dbConn *sql.DB) http.HandlerFunc {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
 		}
-		w.Header().Set("Content-Type", "application/json")
+		w.Header().Set("Content-Type", "text/plain; charset=utf-8")
 		w.WriteHeader(http.StatusOK)
-		json.NewEncoder(w).Encode(jugador)
+		fmt.Fprintf(w, "%v", jugador) // %v imprime el struct
 	}
 }
 
 
 // PUT /jugadores/{id}
 func UpdateJugadorHandler(dbConn *sql.DB) http.HandlerFunc {
-	return func(w http.ResponseWriter, r *http.Request) {
-		idStr := r.PathValue("id")
-		id64, err := strconv.ParseInt(idStr, 10, 32)
-		if err != nil {
-			http.Error(w, "id inválido en la URL", http.StatusBadRequest)
-			return
-		}
-		id := int32(id64)
-		var p db.UpdateJugadorParams
-		if err := json.NewDecoder(r.Body).Decode(&p); err != nil {
-			http.Error(w, "invalid json body: "+err.Error(), http.StatusBadRequest)
-			return
-		}
-		
-		// Validación. mismo que antes
-		if p.IDJugador != id {
-			http.Error(w, "id en el cuerpo debe coincidir con el id en la ruta", http.StatusBadRequest)
-			return
-		}
+    return func(w http.ResponseWriter, r *http.Request) {
+        // 1. Obtener ID de la URL
+        idStr := r.PathValue("id")
+        id64, err := strconv.ParseInt(idStr, 10, 32)
+        if err != nil {
+            http.Error(w, "id inválido en la URL", http.StatusBadRequest)
+            return
+        }
+        id := int32(id64)
 
-		// Lógica de DB
-		queries := db.New(dbConn)
-		if err := queries.UpdateJugador(context.Background(), p); err != nil {
-			http.Error(w, err.Error(), http.StatusInternalServerError)
-			return
-		}
+        // 2. Parsear el formulario (x-www-form-urlencoded)
+        if err := r.ParseForm(); err != nil {
+            http.Error(w, "Error al leer el formulario: "+err.Error(), http.StatusBadRequest)
+            return
+        }
 
-		updated, _ := queries.GetJugador(context.Background(), id)
-		w.Header().Set("Content-Type", "application/json")
-		w.WriteHeader(http.StatusOK)
-		json.NewEncoder(w).Encode(updated)
-	}
+        // 3. Obtener y convertir valores
+        // Asumimos nombres de campos estándar: nombre, posicion, pais, altura, fecha_nacimiento
+        nombre := r.FormValue("nombre")
+        posicion := r.FormValue("posicion")
+        paisNombre := r.FormValue("pais")
+        
+        altura, errAlt := strconv.Atoi(r.FormValue("altura"))
+        fechaNacimiento, errFecha := time.Parse("2006-01-02", r.FormValue("fecha_nacimiento"))
+
+        if errAlt != nil || errFecha != nil {
+            http.Error(w, "Error en formato de altura (número) o fecha (YYYY-MM-DD)", http.StatusBadRequest)
+            return
+        }
+
+        // 4. Construir parámetros
+        params := db.UpdateJugadorParams{
+            IDJugador:       id,
+            Nombre:          nombre,
+            Posicion:        posicion,
+            PaisNombre:      paisNombre,
+            Altura:          int32(altura),
+            FechaNacimiento: fechaNacimiento,
+        }
+
+        // 5. Ejecutar Update en BD
+        queries := db.New(dbConn)
+        if err := queries.UpdateJugador(r.Context(), params); err != nil {
+            http.Error(w, "Error al actualizar: "+err.Error(), http.StatusInternalServerError)
+            return
+        }
+
+        // 6. Responder con Texto Plano
+        updated, _ := queries.GetJugador(r.Context(), id)
+        
+        w.Header().Set("Content-Type", "text/plain; charset=utf-8")
+        w.WriteHeader(http.StatusOK)
+        // Devuelve la representación en texto del struct actualizado
+        fmt.Fprintf(w, "Jugador actualizado: %v", updated)
+    }
 }
 
 

@@ -3,7 +3,7 @@ package handlers
 import (
 	"context"
 	"database/sql"
-	"encoding/json"
+	"fmt"
 	"net/http"
 	"strings"
 
@@ -13,28 +13,26 @@ import (
 // POST /paises
 func CreatePaisHandler(dbConn *sql.DB) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		var p struct {
-			Nombre string `json:"nombre"`
-		}
-		if err := json.NewDecoder(r.Body).Decode(&p); err != nil {
-			http.Error(w, err.Error(), http.StatusBadRequest)
-			return
-		}
-		if strings.TrimSpace(p.Nombre) == "" {
-			http.Error(w, "nombre es requerido", http.StatusBadRequest)
+		nombre := r.FormValue("nombre")
+
+		if strings.TrimSpace(nombre) == "" {
+			http.Error(w, "nombre es obligatorio", http.StatusBadRequest)
 			return
 		}
 
 		queries := db.New(dbConn)
-		created, err := queries.CreatePais(context.Background(), p.Nombre)
-		if err != nil {
-			http.Error(w, err.Error(), http.StatusInternalServerError)
-			return
-		}
-		w.Header().Set("Content-Type", "application/json")
+
+		created, err := queries.CreatePais(r.Context(), nombre)
+        if err != nil {
+            http.Error(w, err.Error(), http.StatusInternalServerError)
+            return
+        }
+
+		// La respuesta es texto plano y no mas JSON.
 		w.WriteHeader(http.StatusCreated)
-		json.NewEncoder(w).Encode(map[string]string{"nombre": created})
+        w.Write([]byte("País creado: " + created))
 	}
+		
 }
 
 // GET /paises
@@ -46,9 +44,11 @@ func ListPaisesHandler(dbConn *sql.DB) http.HandlerFunc {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
 		}
-		w.Header().Set("Content-Type", "application/json")
-		w.WriteHeader(http.StatusOK)
-		json.NewEncoder(w).Encode(all)
+		w.Header().Set("Content-Type", "text/plain; charset=utf-8")
+        w.WriteHeader(http.StatusOK)
+		for _, pais := range all {
+            fmt.Fprintf(w, "%v | ", pais) // %v imprime el struct
+        }
 	}
 }
 

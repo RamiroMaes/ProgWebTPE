@@ -8,7 +8,7 @@ package views
 import "github.com/a-h/templ"
 import templruntime "github.com/a-h/templ/runtime"
 
-func EntityForm() templ.Component {
+func EntityForm(paises []string) templ.Component {
 	return templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
 		templ_7745c5c3_W, ctx := templ_7745c5c3_Input.Writer, templ_7745c5c3_Input.Context
 		if templ_7745c5c3_CtxErr := ctx.Err(); templ_7745c5c3_CtxErr != nil {
@@ -29,7 +29,30 @@ func EntityForm() templ.Component {
 			templ_7745c5c3_Var1 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<form hx-post=\"/jugadores\" hx-target=\"#tabla-jugadores-tbody\" hx-swap=\"beforeend\" hx-on:htmx:response-error=\"alert(event.detail.xhr.responseText)\" hx-on:htmx:after-request=\"if(event.detail.successful) this.reset()\">Posición (seleccione una): <select id=\"posicion\" name=\"agregarPosicion\"><option value=\"Arquero\">Arquero</option> <option value=\"Defensor\">Defensor</option> <option value=\"Mediocampista\">Mediocampista</option> <option value=\"Delantero\">Delantero</option></select><br>Número: <input id=\"numero\" type=\"number\" name=\"agregarNumero\" required><br>Nombre completo: <input id=\"nombre\" type=\"text\" name=\"agregarNombre\" required><br>Pais: <input id=\"pais\" type=\"text\" name=\"agregarPais\" required><br>Fecha de nacimiento: <input id=\"fecha_nacimiento\" type=\"date\" name=\"agregarFechaNacimiento\" required><br>Altura (cm): <input id=\"altura\" type=\"number\" name=\"agregarAltura\" required><br><button type=\"submit\">Enviar</button></form>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<form method=\"POST\" action=\"/jugadores\">Posición (seleccione una): <select id=\"posicion\" name=\"agregarPosicion\"><option value=\"Arquero\">Arquero</option> <option value=\"Defensor\">Defensor</option> <option value=\"Mediocampista\">Mediocampista</option> <option value=\"Delantero\">Delantero</option></select><br>Número: <input id=\"numero\" type=\"number\" name=\"agregarNumero\" required><br>Nombre completo: <input id=\"nombre\" type=\"text\" name=\"agregarNombre\" required><br>País: <input id=\"pais\" list=\"lista-paises\" name=\"agregarPais\" placeholder=\"Elegir país...\" required autocomplete=\"off\"> <datalist id=\"lista-paises\">")
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		for _, nombrePais := range paises {
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, "<option value=\"")
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			var templ_7745c5c3_Var2 string
+			templ_7745c5c3_Var2, templ_7745c5c3_Err = templ.JoinStringErrs(nombrePais)
+			if templ_7745c5c3_Err != nil {
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/entify_form.templ`, Line: 21, Col: 50}
+			}
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var2))
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 3, "\"></option>")
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+		}
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 4, "</datalist><br>Fecha de nacimiento: <input id=\"fecha_nacimiento\" type=\"date\" name=\"agregarFechaNacimiento\" required><br>Altura (cm): <input id=\"altura\" type=\"number\" name=\"agregarAltura\" required><br><button type=\"submit\">Enviar</button></form>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

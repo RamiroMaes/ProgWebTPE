@@ -1,14 +1,7 @@
 package views
 
-
-templ EntityForm (){
-    <form
-        hx-post="/jugadores"
-        hx-target="#tabla-jugadores-tbody"
-        hx-swap="beforeend"
-        hx-on:htmx:response-error="alert(event.detail.xhr.responseText)"
-        hx-on:htmx:after-request="if(event.detail.successful) this.reset()"
-    >
+templ EntityForm (paises []string){
+    <form method="POST" action="/jugadores">
         Posición (seleccione una):
         <select id="posicion" name="agregarPosicion">
             <option value="Arquero">Arquero</option>
@@ -21,13 +14,18 @@ templ EntityForm (){
             <input id="numero" type="number" name="agregarNumero" required/><br/>
             Nombre completo:
             <input id="nombre" type="text" name="agregarNombre" required/><br/>
-            Pais:
-            <input id="pais" type="text" name="agregarPais" required/><br/>
+            País:
+            <input id="pais" list="lista-paises" name="agregarPais" placeholder="Elegir país..." required autocomplete="off"/>
+            <datalist id="lista-paises">
+                for _, nombrePais := range paises {
+                        <option value={ nombrePais }></option>
+                }
+            </datalist>
+            <br/>
             Fecha de nacimiento:
             <input id="fecha_nacimiento" type="date" name="agregarFechaNacimiento" required/><br/>
             Altura (cm):
             <input id="altura" type="number" name="agregarAltura" required/><br/>
-        
         
         <button type="submit">Enviar</button>
     </form>

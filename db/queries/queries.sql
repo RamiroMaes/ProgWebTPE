@@ -17,9 +17,19 @@ WHERE Nombre = $1;
 
 
 -- name: ListJugadores :many
-SELECT iD_Jugador, Nombre FROM Jugador;
+SELECT iD_Jugador, Nombre FROM Jugador
+ORDER BY iD_Jugador;
 -- name: ListPlantel :many
-SELECT * FROM Jugador;
+SELECT * FROM Jugador
+ORDER BY 
+  CASE Posicion
+    WHEN 'Arquero' THEN 1
+    WHEN 'Defensor' THEN 2
+    WHEN 'Mediocampista' THEN 3
+    WHEN 'Delantero' THEN 4
+    ELSE 5
+  END,
+  iD_Jugador;
 -- name: ListPaises :many
 SELECT * FROM Pais;
 

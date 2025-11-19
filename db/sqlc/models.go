@@ -17,6 +17,6 @@ type Jugador struct {
 	PaisNombre      string    `json:"pais_nombre"`
 }
 
-type Pais struct {
+type Pai struct {
 	Nombre string `json:"nombre"`
 }

@@ -110,6 +110,7 @@ func (q *Queries) GetPais(ctx context.Context, nombre string) (string, error) {
 
 const listJugadores = `-- name: ListJugadores :many
 SELECT iD_Jugador, Nombre FROM Jugador
+ORDER BY iD_Jugador
 `
 
 type ListJugadoresRow struct {
@@ -169,6 +170,15 @@ func (q *Queries) ListPaises(ctx context.Context) ([]string, error) {
 
 const listPlantel = `-- name: ListPlantel :many
 SELECT nombre, id_jugador, posicion, fecha_nacimiento, altura, pais_nombre FROM Jugador
+ORDER BY 
+  CASE Posicion
+    WHEN 'Arquero' THEN 1
+    WHEN 'Defensor' THEN 2
+    WHEN 'Mediocampista' THEN 3
+    WHEN 'Delantero' THEN 4
+    ELSE 5
+  END,
+  iD_Jugador
 `
 
 func (q *Queries) ListPlantel(ctx context.Context) ([]Jugador, error) {

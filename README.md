@@ -4,6 +4,7 @@
     - Docker
     - Go 1.22+ (o compatible)
     - sqlc (solo en el caso de que se quieran modificar las queries)
+    - templ (solo en el caso de que se quiera modificar algo del DOM)
 
 # Variables (por defecto en el Makefile)
 - Contenedor: `some-postgres`

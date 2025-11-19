@@ -15,7 +15,7 @@ func ListJugadoresPage(queries *db.Queries) http.HandlerFunc {
             return
         }
         
-        // Se obtienen los jugadores desde la base de datos para la tabla
+        // Se obtienen los jugadores desde la base de datos.
         jugadores, err := queries.ListPlantel(r.Context())
         if err != nil {
             http.Error(w, err.Error(), http.StatusInternalServerError)

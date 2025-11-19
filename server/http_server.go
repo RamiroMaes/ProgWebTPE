@@ -43,7 +43,6 @@ func StartServer(connStr string, addr string) error {
 	mux.HandleFunc("GET /jugadores/{id}", h.GetJugadorHandler(dbConn))
 	mux.HandleFunc("PUT /jugadores/{id}", h.UpdateJugadorHandler(dbConn))
 	mux.HandleFunc("DELETE /jugadores/{id}", h.DeleteJugadorHandler(dbConn))
-	mux.HandleFunc("POST /delete", h.DeleteBotonJugador(q))
 
 	// Inicia el servidor
 	log.Printf("Servidor escuchando en %s\n", addr)

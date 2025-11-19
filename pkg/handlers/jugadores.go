@@ -9,66 +9,99 @@ import (
 	"strings"
 	"time"
 	"fmt"
+	"ejemplo.com/mi-proyecto-go/views"
 	db "ejemplo.com/mi-proyecto-go/db/sqlc"
 	"github.com/lib/pq"
 )
 
 // POST /jugadores
 func CreateJugadorHandler(dbConn *sql.DB) http.HandlerFunc {
-    return func(w http.ResponseWriter, r *http.Request) {
-        if r.Method != http.MethodPost {
-            http.Error(w, "Método no permitido", http.StatusMethodNotAllowed)
-            return
-        }
+	return func(w http.ResponseWriter, r *http.Request) {
+		if err := r.ParseForm(); err != nil {
+			http.Error(w, "Error al parsear el formulario: "+err.Error(), http.StatusBadRequest)
+			return
+		}
 
-        if err := r.ParseForm(); err != nil {
-            http.Error(w, "Error al parsear el formulario", http.StatusBadRequest)
-            return
-        }
+		nombre := r.FormValue("agregarNombre")
+		posicion := r.FormValue("agregarPosicion")
+		paisNombre := r.FormValue("agregarPais")
+		idJugador, errID := strconv.Atoi(r.FormValue("agregarNumero"))
+		altura, errAltura := strconv.Atoi(r.FormValue("agregarAltura"))
+		
+        // Para la fecha, el formato de un input type="date" es "YYYY-MM-DD"
+		fechaNacimiento, errFecha := time.Parse("2006-01-02", r.FormValue("agregarFechaNacimiento"))
+		if errID != nil || errAltura != nil || errFecha != nil {
+			http.Error(w, "Error en la conversion de la fecha de nacimiento.", http.StatusBadRequest)
+			return
+		}
 
-        numero, err1 := strconv.Atoi(r.FormValue("agregarNumero"))
-        altura, err2 := strconv.Atoi(r.FormValue("agregarAltura"))
-        fechaNacimiento, err3 := time.Parse("2006-01-02", r.FormValue("agregarFechaNacimiento"))
+		params := db.CreateJugadorParams{
+			Nombre:         nombre,
+			IDJugador:      int32(idJugador),
+			Posicion:       posicion,
+			FechaNacimiento: fechaNacimiento,
+			Altura:         int32(altura),
+			PaisNombre:     paisNombre,
+		}
 
-        if err1 != nil || err2 != nil || err3 != nil {
-            http.Error(w, "Error en la conversión de campos numéricos o fecha.", http.StatusBadRequest)
-            return
-        }
+		// Validación de que todos los campos obligatorios estén presentes
+		if strings.TrimSpace(params.Nombre) == "" {
+			http.Error(w, "nombre es obligatorio", http.StatusBadRequest)
+			return
+		}
+		if params.Altura <= 0 {
+			http.Error(w, "altura es obligatorio y debe ser > 0", http.StatusBadRequest)
+			return
+		}
+		if strings.TrimSpace(params.Posicion) == "" {
+			http.Error(w, "posición es obligatorio", http.StatusBadRequest)
+			return
+		}
+		if strings.TrimSpace(params.PaisNombre) == "" {
+			http.Error(w, "pais_nombre es obligatorio", http.StatusBadRequest)
+			return
+		}
+		if time.Time(params.FechaNacimiento).IsZero() {
+			http.Error(w, "fecha_nacimiento es obligatorio", http.StatusBadRequest)
+			return
+		}
+		if params.IDJugador <= 0 {
+			http.Error(w, "id_jugador debe ser > 0", http.StatusBadRequest)
+			return
+		}
 
-        params := db.CreateJugadorParams{
-            Nombre:          r.FormValue("agregarNombre"),
-            IDJugador:       int32(numero),
-            Posicion:        r.FormValue("agregarPosicion"),
-            FechaNacimiento: fechaNacimiento,
-            Altura:          int32(altura),
-            PaisNombre:      r.FormValue("agregarPais"),
-        }
+		// El código de error estándar de PostgreSQL para una violación de unicidad es 23505.
+		// El código de error de PostgreSQL para una violación de clave foránea es 23503.
 
-        if strings.TrimSpace(params.Nombre) == "" {
-            http.Error(w, "Nombre es obligatorio", http.StatusBadRequest)
-            return
-        }
-
-        queries := db.New(dbConn)
-        _, err := queries.CreateJugador(r.Context(), params)
-        if err != nil {
-            if pqErr, ok := err.(*pq.Error); ok {
+		queries := db.New(dbConn)
+		createdJugador, err := queries.CreateJugador(r.Context(), params)
+		if err != nil {
+			if pqErr, ok := err.(*pq.Error); ok {
                 switch pqErr.Code {
                 case "23505":
                     http.Error(w, "Error: Ya existe un jugador con ese número.", http.StatusConflict)
                 case "23503":
-                    http.Error(w, "Error: El país ingresado no es válido.", http.StatusBadRequest)
+                    if pqErr.Constraint == "jugador_pais" { // Se verifica que el conflicto sea con la tabla de paises y no con otra.
+                        http.Error(w, "Error: El país ingresado no es válido.", http.StatusBadRequest)
+                    } else {
+                        // Para otras violaciones de FK que no sean la de tabla país (en caso de futuras ampliaciones de la bdd).
+                        http.Error(w, "Error de datos: "+pqErr.Message, http.StatusBadRequest)
+                    }
                 default:
+                    // Para otros errores de base de datos no capturados específicamente
                     http.Error(w, "Error de base de datos: "+pqErr.Message, http.StatusInternalServerError)
                 }
-            } else {
-                http.Error(w, err.Error(), http.StatusInternalServerError)
-            }
-            return
-        }
+			} else {
+                // Si el error no es de tipo *pq.Error
+				http.Error(w, "Error interno al crear el jugador: "+err.Error(), http.StatusInternalServerError)
+			}
+			return // No continuamos.
+		}
 
-        http.Redirect(w, r, "/#tabla-jugadores", http.StatusSeeOther)	// Redirige a la sección de la tabla de jugadores
-    }
+		w.Header().Set("Content-Type", "text/html")
+		views.EntityRow(createdJugador).Render(r.Context(), w)
+	}
+
 }
 
 
@@ -216,37 +249,5 @@ func DeleteJugadorHandler(dbConn *sql.DB) http.HandlerFunc {
             return
         }
         w.WriteHeader(http.StatusNoContent)
-    }
-}
-
-
-// POST /jugadores/{id}
-	// Elimina un jugador desde el botón de la fila del jugador
-func DeleteBotonJugador(queries *db.Queries) http.HandlerFunc {
-    return func(w http.ResponseWriter, r *http.Request) {
-        if r.Method != http.MethodPost {
-            http.Error(w, "Método no permitido", http.StatusMethodNotAllowed)
-            return
-        }
-
-        if err := r.ParseForm(); err != nil {
-            http.Error(w, "Error al parsear el formulario", http.StatusBadRequest)
-            return
-        }
-
-        idStr := r.FormValue("id")
-        id, err := strconv.Atoi(idStr)
-        if err != nil {
-            http.Error(w, "ID inválido", http.StatusBadRequest)
-            return
-        }
-
-        err = queries.DeleteJugador(r.Context(), int32(id))
-        if err != nil {
-            http.Error(w, err.Error(), http.StatusInternalServerError)
-            return
-        }
-
-        http.Redirect(w, r, "/", http.StatusSeeOther)
     }
 }

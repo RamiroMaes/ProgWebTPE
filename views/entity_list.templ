@@ -1,6 +1,7 @@
 package views
 
 import (
+    "strconv"
     "fmt"
     db "ejemplo.com/mi-proyecto-go/db/sqlc"
 )
@@ -8,16 +9,23 @@ import (
 templ EntityRow(j db.Jugador){
     <tr id={ fmt.Sprintf("jugador-row-%d", j.IDJugador) }>
         <td>{ j.Posicion }</td>
-        <td>{ fmt.Sprint(j.IDJugador) }</td>
+        <td>{ strconv.Itoa(int(j.IDJugador)) }</td>
         <td>{ j.Nombre }</td>
         <td>{ j.PaisNombre }</td>
         <td>{ j.FechaNacimiento.Format("2006-01-02") }</td>
-        <td>{ fmt.Sprint(j.Altura) }</td>
+        <td>{ strconv.Itoa(int(j.Altura)) }</td>
         <td class="celda-eliminar">
-            <form method="POST" action="/delete">
-                <input type="hidden" name="id" value={ fmt.Sprint(j.IDJugador) }/>
-                <button type="submit">Eliminar</button>
-            </form>
+            <button
+                class="eliminar"
+                type="button"
+                hx-delete={ fmt.Sprintf("/jugadores/%d", j.IDJugador) }
+                hx-confirm={ fmt.Sprintf("¿Estás seguro de eliminar a %s?", j.Nombre) }
+                hx-target="closest tr"
+                hx-swap="none"
+                hx-on:htmx:after-request="if (event.detail.successful) this.closest('tr').remove()"
+                >
+                Eliminar
+                </button>
         </td>
     </tr>
 }

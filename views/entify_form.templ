@@ -1,7 +1,14 @@
 package views
 
+
 templ EntityForm (paises []string){
-    <form method="POST" action="/jugadores">
+    <form
+        hx-post="/jugadores"
+        hx-target="#tabla-jugadores-tbody"
+        hx-swap="beforeend"
+        hx-on:htmx:response-error="alert(event.detail.xhr.responseText)"
+        hx-on:htmx:after-request="if(event.detail.successful) this.reset()"
+    >
         Posición (seleccione una):
         <select id="posicion" name="agregarPosicion">
             <option value="Arquero">Arquero</option>
@@ -26,6 +33,7 @@ templ EntityForm (paises []string){
             <input id="fecha_nacimiento" type="date" name="agregarFechaNacimiento" required/><br/>
             Altura (cm):
             <input id="altura" type="number" name="agregarAltura" required/><br/>
+        
         
         <button type="submit">Enviar</button>
     </form>

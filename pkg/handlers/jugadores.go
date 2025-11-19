@@ -49,6 +49,9 @@ func CreateJugadorHandler(dbConn *sql.DB) http.HandlerFunc {
             return
         }
 
+		// El código de error estándar de PostgreSQL para una violación de unicidad es 23505.
+		// El código de error de PostgreSQL para una violación de clave foránea es 23503.
+		
         queries := db.New(dbConn)
         _, err := queries.CreateJugador(r.Context(), params)
         if err != nil {
@@ -57,7 +60,12 @@ func CreateJugadorHandler(dbConn *sql.DB) http.HandlerFunc {
                 case "23505":
                     http.Error(w, "Error: Ya existe un jugador con ese número.", http.StatusConflict)
                 case "23503":
-                    http.Error(w, "Error: El país ingresado no es válido.", http.StatusBadRequest)
+                    if pqErr.Constraint == "jugador_pais" { // Se verifica que el conflicto sea con la tabla de paises y no con otra.
+                        http.Error(w, "Error: El país ingresado no es válido.", http.StatusBadRequest)
+                    } else {
+                        // Para otras violaciones de FK que no sean la de tabla país (en caso de futuras ampliaciones de la bdd).
+                        http.Error(w, "Error de datos: "+pqErr.Message, http.StatusBadRequest)
+                    }
                 default:
                     http.Error(w, "Error de base de datos: "+pqErr.Message, http.StatusInternalServerError)
                 }

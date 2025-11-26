@@ -147,3 +147,21 @@ body {
     margin-top: 10px;
     padding: 10px 20px;
 }
+
+th.sortable {
+    cursor: pointer;
+    user-select: none;
+}
+
+th.sortable:hover {
+    background-color: #e0e0e0;
+}
+
+.sort-indicator {
+    opacity: 0.5;
+    font-size: 0.8em;
+}
+
+th.sortable:hover .sort-indicator {
+    opacity: 1;
+}

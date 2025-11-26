@@ -30,23 +30,71 @@ templ EntityRow(j db.Jugador){
     </tr>
 }
 
-templ EntityList(jugadores []db.Jugador){
+templ EntityRows(jugadores []db.Jugador){
+    for _, j := range jugadores {
+        @EntityRow(j)
+    }
+}
+
+templ EntityList(jugadores []db.Jugador, currentSort string){
     <table id="tabla-jugadores">
         <thead>
             <tr>
-                <th>Posición</th>
-                <th>Número</th>
-                <th>Nombre</th>
-                <th>País</th>
-                <th>Fecha de Nacimiento</th>
-                <th>Altura (cm)</th>
+                <th class="sortable" hx-get="/jugadores?sort=posicion" hx-target="#tabla-jugadores" hx-swap="innerHTML">
+                    Posición
+                    if currentSort == "posicion" {
+                        <span>▲</span>
+                    } else {
+                        <span class="sort-indicator">◆</span>
+                    }
+                </th>
+                <th class="sortable" hx-get="/jugadores?sort=id_jugador" hx-target="#tabla-jugadores" hx-swap="innerHTML">
+                    Número
+                    if currentSort == "id_jugador" {
+                        <span>▲</span>
+                    } else {
+                        <span class="sort-indicator">◆</span>
+                    }
+                </th>
+                <th class="sortable" hx-get="/jugadores?sort=nombre" hx-target="#tabla-jugadores" hx-swap="innerHTML">
+                    Nombre
+                    if currentSort == "nombre" {
+                        <span>▲</span>
+                    } else {
+                        <span class="sort-indicator">◆</span>
+                    }
+                </th>
+                <th class="sortable" hx-get="/jugadores?sort=pais_nombre" hx-target="#tabla-jugadores" hx-swap="innerHTML">
+                    País
+                    if currentSort == "pais_nombre" {
+                        <span>▲</span>
+                    } else {
+                        <span class="sort-indicator">◆</span>
+                    }
+                </th>
+                <th class="sortable" hx-get="/jugadores?sort=fecha_nacimiento" hx-target="#tabla-jugadores" hx-swap="innerHTML">
+                    Fecha de Nacimiento
+                    if currentSort == "fecha_nacimiento" {
+                        <span>▲</span>
+                    } else {
+                        <span class="sort-indicator">◆</span>
+                    }
+                </th>
+                <th class="sortable" hx-get="/jugadores?sort=altura" hx-target="#tabla-jugadores" hx-swap="innerHTML">
+                    Altura (cm)
+                    if currentSort == "altura" {
+                        <span>▲</span>
+                    } else {
+                        <span class="sort-indicator">◆</span>
+                    }
+                </th>
                 <th class="columna-eliminar"></th>
             </tr>
         </thead>
         <tbody id="tabla-jugadores-tbody">
             for _, j := range jugadores {
                 @EntityRow(j)
-			}
+            }
         </tbody>
     </table>
 }

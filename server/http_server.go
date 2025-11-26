@@ -37,7 +37,8 @@ func StartServer(connStr string, addr string) error {
 	mux.HandleFunc("GET /", h.ListJugadoresPage(q))
 	mux.HandleFunc("POST /jugadores", h.CreateJugadorHandler(dbConn))
 
-	mux.HandleFunc("GET /jugadores", h.ListJugadoresHandler(dbConn))
+	mux.HandleFunc("GET /jugadores", h.SortJugadoresHandler(q))
+//	mux.HandleFunc("GET /jugadores", h.ListJugadoresHandler(dbConn))
 	mux.HandleFunc("GET /plantel", h.ListPlantelHandler(dbConn))
 	
 	mux.HandleFunc("GET /jugadores/{id}", h.GetJugadorHandler(dbConn))

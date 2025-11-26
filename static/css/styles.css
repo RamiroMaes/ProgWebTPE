@@ -148,20 +148,24 @@ body {
     padding: 10px 20px;
 }
 
+/* ESTILOS PARA ORDENAMIENTO DE TABLA */
 th.sortable {
     cursor: pointer;
     user-select: none;
 }
 
+/* Cambia el color de fondo al pasar el cursor sobre el encabezado */
 th.sortable:hover {
     background-color: #e0e0e0;
 }
 
+/* Indicador de ordenamiento (flecha) */
 .sort-indicator {
     opacity: 0.5;
     font-size: 0.8em;
 }
 
+/* Muestra el indicador de ordenamiento al pasar el cursor sobre el encabezado */
 th.sortable:hover .sort-indicator {
     opacity: 1;
 }

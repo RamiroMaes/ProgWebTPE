@@ -47,7 +47,7 @@ func ordenarJugadores(jugadores []db.Jugador, sortColumn string) {
     }
 }
 
-// GET /
+// Handler para la página principal que lista los jugadores y el formulario de agregado
 func ListJugadoresPage(queries *db.Queries) http.HandlerFunc {
     return func(w http.ResponseWriter, r *http.Request) {
         // Nos aseguramos de que este handler solo responda a la ruta raíz exacta.
@@ -75,6 +75,7 @@ func ListJugadoresPage(queries *db.Queries) http.HandlerFunc {
     }
 }
 
+//  Handler para hacer GET /jugadores
 func GetJugadoresHandler(queries *db.Queries, dbConn *sql.DB) http.HandlerFunc {
     return func(w http.ResponseWriter, r *http.Request) {
         // Si es petición HTMX (desde el navegador con sort)

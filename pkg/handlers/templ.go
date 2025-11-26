@@ -1,6 +1,7 @@
 package handlers
 
 import (
+    "database/sql"
 	"net/http"
     "sort"
 	
@@ -8,6 +9,7 @@ import (
 	"ejemplo.com/mi-proyecto-go/views"
 )
 
+// Mapa para definir el orden de las posiciones y que no sea alfabetico
 var posicionOrden = map[string]int{
     "Arquero":       1,
     "Defensor":      2,
@@ -15,6 +17,7 @@ var posicionOrden = map[string]int{
     "Delantero":     4,
 }
 
+// Función para ordenar jugadores según la columna seleccionada
 func ordenarJugadores(jugadores []db.Jugador, sortColumn string) {
     switch sortColumn {
     case "posicion":
@@ -44,6 +47,7 @@ func ordenarJugadores(jugadores []db.Jugador, sortColumn string) {
     }
 }
 
+// GET /
 func ListJugadoresPage(queries *db.Queries) http.HandlerFunc {
     return func(w http.ResponseWriter, r *http.Request) {
         // Nos aseguramos de que este handler solo responda a la ruta raíz exacta.
@@ -71,29 +75,35 @@ func ListJugadoresPage(queries *db.Queries) http.HandlerFunc {
     }
 }
 
-func SortJugadoresHandler(queries *db.Queries) http.HandlerFunc {
+func GetJugadoresHandler(queries *db.Queries, dbConn *sql.DB) http.HandlerFunc {
     return func(w http.ResponseWriter, r *http.Request) {
-        sortColumn := r.URL.Query().Get("sort")
-        
-        // Validar columna
-        validColumns := map[string]bool{
-            "posicion": true, "id_jugador": true, "nombre": true,
-            "pais_nombre": true, "fecha_nacimiento": true, "altura": true,
-        }
-        
-        if !validColumns[sortColumn] {
-            sortColumn = "id_jugador"
-        }
-        
-        jugadores, err := queries.ListPlantel(r.Context())
-        if err != nil {
-            http.Error(w, err.Error(), http.StatusInternalServerError)
+        // Si es petición HTMX (desde el navegador con sort)
+        if r.Header.Get("HX-Request") == "true" {
+            sortColumn := r.URL.Query().Get("sort")
+            
+            validColumns := map[string]bool{
+                "posicion": true, "id_jugador": true, "nombre": true,
+                "pais_nombre": true, "fecha_nacimiento": true, "altura": true,
+            }
+            
+            if !validColumns[sortColumn] {
+                sortColumn = "id_jugador"
+            }
+            
+            jugadores, err := queries.ListPlantel(r.Context())
+            if err != nil {
+                http.Error(w, err.Error(), http.StatusInternalServerError)
+                return
+            }
+            
+            ordenarJugadores(jugadores, sortColumn)
+            
+            w.Header().Set("Content-Type", "text/html")
+            views.EntityList(jugadores, sortColumn).Render(r.Context(), w)
             return
         }
-        
-        ordenarJugadores(jugadores, sortColumn)
-        
-        w.Header().Set("Content-Type", "text/html")
-        views.EntityList(jugadores, sortColumn).Render(r.Context(), w)
+
+        // Si es petición normal (desde consola/curl), delega al handler existente
+        ListJugadoresHandler(dbConn)(w, r)
     }
 }

@@ -1,64 +1,60 @@
-# ProgWebTPE — Guía rápida de ejecución
-# Requisitos
-    - Linux, bash y make
+# ProgWebTPE — Quick Start Guide
+# Prerequisites
+    - Linux, Bash, and Make
     - Docker
-    - Go 1.22+ (o compatible)
-    - sqlc (solo en el caso de que se quieran modificar las queries)
-    - templ (solo en el caso de que se quiera modificar algo del DOM)
+    - Go 1.22+ (or compatible)
+    - sqlc (only if you intend to modify the queries)
+    - templ (only if you intend to modify DOM elements)
 
-# Variables (por defecto en el Makefile)
-- Contenedor: `some-postgres`
-- Usuario DB: `postgres`
+# Variables (Default values in the Makefile)
+- Container: `some-postgres`
+- DB User: `postgres`
 - Password: `XYZ`
 - DB: `tpespecial`
-- Imagen: `postgres:16`
-- Puerto HTTP: `8080`
+- Image: `postgres:16`
+- HTTP Port: `8080`
 
-Se podrian sobreescribir al invocar make, por ejemplo:
-`make DB_PASSWORD=otra PASS DB_NAME=otra_db setup`
+These can be overridden when invoking make, for example:
+`make DB_PASSWORD=another_pass DB_NAME=another_db setup`
 
+# STEPS:
 
-
-
-# PASOS:
-
-
-# 1- Preparar la base de datos (2 opciones) mediante consola linux:
-Crear o arrancar el contenedor, esperar disponibilidad, crear la DB si falta y aplicar el schema.
+# 1- Prepare the database (2 options) via Linux console:
+Create or start the container, wait for availability, create the DB if missing, and apply the schema.
 ```bash
 make setup
 ```
 
-sino mas simple (tambien se levanta el servidor y se ejecuta el requests.bash):
+Alternatively, more simply (this also starts the server and executes requests.bash):
 ```bash
     make test
 ```
 
-## 2- Levantar el servidor:
-En una terminal:
+## 2- Start the server:
+In a terminal:
 ```bash
 go run ./cmd/server
 ```
-La API quedará en `http://localhost:8080`.
+The API will be available in `http://localhost:8080`.
 
-## 3- Probar la API (2 opciones):
-    - Ejecutar el script de peticiones:
+## 3- Test the API (2 options):
+    - Run the request script:
 ```bash
         chmod +x ./requests.bash
         ./requests.bash
 ```
-    - O usar la tarea que arranca server en background, corre el script y lo apaga:
+    - Or use the task that starts the server in the background, runs the script, and shuts it down:
 ```bash
     make test
 ```
 
-## 4 - Ver resolucion: 
-    Abre en el navegador:
+## 4 - View resolution:
+    Open in your browser:
 
     http://localhost:8080/
 
-## 5- Limpieza de puerto y contenedor
-    Detener y eliminar el contenedor:
-```     bash
-        make clean
-    ```
+## 5-Port and container cleanup
+    Stop and remove the container:
+```bash
+    make clean
+```
